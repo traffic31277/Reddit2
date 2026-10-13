@@ -7,21 +7,18 @@ specifies that any unauthenticated user can "create", "read", "update",
 and "delete" any "Todo" records.
 =========================================================================*/
 const schema = a.schema({
-  Todo: a
-    .model({
-      content: a.string(),
-    })
-    .authorization((allow) => [allow.guest()]),
-});
-
-export type Schema = ClientSchema<typeof schema>;
-
-export const data = defineData({
-  schema,
-  authorizationModes: {
-    defaultAuthorizationMode: 'identityPool',
-  },
-});
+  Chat: a.model({
+    name: a.string(),
+    isDone: a.boolean(),
+    message: a.hasMany('Message', 'chatID')
+  }),
+  Message: a.model({
+    text: a.string(),
+    chat: a.belongsTo('Chat', 'chatId'),
+    chatId: a.id(),
+    isDone: a.boolean()
+  }),
+}).authorization((allow) => allow.owner());
 
 /*== STEP 2 ===============================================================
 Go to your frontend source code. From your client-side code, generate a
