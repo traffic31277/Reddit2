@@ -4,7 +4,7 @@ const schema = a.schema({
   Chat: a.model({
     name: a.string(),
     isDone: a.boolean(),
-    message: a.hasMany('Message', 'chatID')
+    messages: a.hasMany('Message', 'chatId')
   }),
   Message: a.model({
     text: a.string(),
@@ -19,9 +19,6 @@ export type Schema = ClientSchema<typeof schema>;
 export const data = defineData({
   schema,
   authorizationModes: {
-    defaultAuthorizationMode: "apiKey",
-    apiKeyAuthorizationMode: {
-      expiresInDays: 30,
-    },
+    defaultAuthorizationMode: 'userPool',
   },
 });
