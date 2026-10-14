@@ -1,16 +1,18 @@
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
 
 const schema = a.schema({
-  Chat: a.model({
-    name: a.string(),
-    isDone: a.boolean(),
-    messages: a.hasMany('Message', 'chatId')
+  User: a.model({
+    userId: a.id().required(),
+    pseudonym: a.string().required(),
+    hasSuggestion: a.boolean().required()
   }),
-  Message: a.model({
-    text: a.string(),
-    chat: a.belongsTo('Chat', 'chatId'),
-    chatId: a.id(),
-    isDone: a.boolean()
+  Suggestion: a.model({
+    suggestionId: a.id().required(),
+    text: a.string().required(),
+    likes: a.integer(),
+    dislikes: a.integer(),
+
+    
   }),
 }).authorization((allow) => allow.owner());
 
