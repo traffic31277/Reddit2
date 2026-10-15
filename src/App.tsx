@@ -5,7 +5,6 @@ import { withAuthenticator } from '@aws-amplify/ui-react';
 import { Authenticator } from '@aws-amplify/ui-react';
 import outputs from '../amplify_outputs.json';
 
-
 // generate database based on Schema
 const client = generateClient<Schema>();
 
@@ -18,12 +17,11 @@ const { errors, data: newMessage } = await client.models.Message.create({
 });
 
 
-function App({ signOut, user }) {
+function App({}) {
   return (
-    <Authenticator>
-      <h1>Hello {user.username}</h1>
-      <button onClick={signOut}>Sign out</button>
-    </Authenticator>
+    <div>
+      <h1>YESYESYES</h1>
+    </div>
   );
 }
 
