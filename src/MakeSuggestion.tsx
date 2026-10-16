@@ -24,6 +24,7 @@ function MakeSuggestion() {
     async function addSuggestion() {
         alert(text);
         await client.models.Suggestion.create({
+            userId: "INSERT USER ID HERE",
             text: text,
             likes: Math.floor(Math.random() * 50)
         });
@@ -32,7 +33,7 @@ function MakeSuggestion() {
     return (
         <main>
             <h1>Make Your Suggestion!</h1>
-            <div >
+            <div>
                 <input class='input_box_background'
                     type="text"
                     value={text}
