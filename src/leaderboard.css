@@ -1,6 +1,6 @@
+
 .post_background {
     border: 5pc;
-    border-color:red;
     border-radius: 10px;
 
     background-color: beige;
@@ -9,7 +9,7 @@
     margin: auto;
     margin-bottom: 2vh;
     margin-top: 2vh;
-    height: 100px;
+    height: fit-content;
 }
 
 .post_username {
@@ -24,10 +24,31 @@
     margin-bottom: 1vh;
     color: black;
     max-height: 15vh;
-    overflow-y: scroll;    
+    overflow-y: scroll; 
+    overflow-x: wrap;   
 }
 
+.comments_background {
+    background-color: cadetblue;
+    color: white;
+    margin:auto;
+    text-align: left;
+    padding-left: 15px;
+    width: 200px;
+    height: 25px;
+    margin-left:3vw;
+    margin-bottom: 1vh;
+    border-radius: 20px;
+}
 
+.comments_background:hover {
+    background-color: darkcyan;
+}
+
+.expanded_comments {
+    background-color: red;
+    size: 50px;
+}
 
 ::-webkit-scrollbar {
     width: 0px;
