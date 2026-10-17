@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import React from 'react'
-import './leaderboard_page.css'
+import '../css/leaderboard_page.css'
 
 const Post = ({username, content, comment_count=0}) => {
   // fill in with comments from aws (comment objects)
