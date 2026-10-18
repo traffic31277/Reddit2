@@ -1,3 +1,8 @@
+/*
+  Code Reviewed by Brandon
+  October 17, 2026
+*/
+
 import { Amplify } from 'aws-amplify';
 import { useEffect, useState } from 'react';
 import type { Schema } from '../amplify/data/resource';

@@ -1,3 +1,8 @@
+/*
+  Code Reviewed by Brandon
+  October 17, 2026
+*/
+
 import { defineAuth } from '@aws-amplify/backend';
 
 /**
