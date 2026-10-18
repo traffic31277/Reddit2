@@ -8,7 +8,7 @@ import outputs from '../amplify_outputs.json';
 function App({}) {
   return (
     <div>
-      <h1>Hello this is the suggestions tester branch</h1>
+      <h1>Hello this is the dev branch</h1>
     </div>
   );
 }
