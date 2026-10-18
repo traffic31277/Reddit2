@@ -1,7 +1,13 @@
+/* 
+    Code Review
+    Mark Masenda
+    10/17/2026
+*/
+
 import "./MakeSuggestion.css";
 import type { Schema } from '../amplify/data/resource';
 import { generateClient } from 'aws-amplify/data';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 const client = generateClient<Schema>();
 
@@ -13,20 +19,22 @@ function MakeSuggestion() {
         setText(e.target.value);
     }
 
+    /* listSuggestions() is not used in this iteration, might use it later */
+
     async function listSuggestions() {
-        const { data: suggestions, errors } = await client.models.Suggestion.list();
+        const { data: suggestions} = await client.models.Suggestion.list();
 
         alert(suggestions.map((suggestion) => suggestion.text).join('\n'));
     }
 
-    // const { user, signOut } = useAuthenticator();
+    /* Changed the likes input from random, to 0 */
 
     async function addSuggestion() {
         alert(text);
         await client.models.Suggestion.create({
             userId: "INSERT USER ID HERE",
             text: text,
-            likes: Math.floor(Math.random() * 50)
+            likes: 0
         });
     }
 
@@ -34,7 +42,7 @@ function MakeSuggestion() {
         <main>
             <h1>Make Your Suggestion!</h1>
             <div>
-                <input class='input_box_background'
+                <input className='input_box_background'
                     type="text"
                     value={text}
                     onChange={handleChange}
@@ -43,9 +51,10 @@ function MakeSuggestion() {
             </div>
      
             <div>
-                <button class='suggestion_button' onClick={addSuggestion}>Submit Suggestion</button>
+                <button className='suggestion_button'
+                    onClick={addSuggestion}>Submit Suggestion
+                </button>
             </div>
-
         </main>
     )
 };

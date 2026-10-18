@@ -1,3 +1,10 @@
+/* 
+    Code Review
+    Mark Masenda
+    10/17/2026
+*/
+
+/* Changed the height from 30vw, to 15*/
 .input_box_background {
     background-color: #ffffff;
     border-radius: 20px;
@@ -5,7 +12,7 @@
     text-align: left;
     font-size: 30px;
     width: 60vw;
-    height: 30vw;
+    height: 15vw;
     margin: auto;
 }
 
@@ -13,6 +20,7 @@
     margin-top: 10px; 
     border-radius: 5px;
 }
+
 /*
 # note from your good friend lily -- 
 - margin determines the space between two objects ON THE OUTSIDE
