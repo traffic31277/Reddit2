@@ -1,15 +1,12 @@
 import React from 'react';
 import '../css/mailbox.css';
-import { useNavigate } from 'react-router-dom';
+import '../css/index.css';
 
+function Mailbox() {
 
-export default function MyComponent() {
-  const navigate = useNavigate();
-
-  const handleNavigate = () => {
-    navigate('/suggestion'); 
+  const handleNavigation = () => {
+    return location.href='../html/leaderboard.html'
   };
-
 
   return (
     <div className="suggestion-container">
@@ -21,10 +18,12 @@ export default function MyComponent() {
           className="mailbox-icon"
         />
 
-        <button className="submit-btn" onClick={handleNavigate}>
+        <button className="submit-btn" onClick={handleNavigation}>
           Submit Suggestion
         </button>
       </main>
     </div>
   );
 }
+
+export default Mailbox
