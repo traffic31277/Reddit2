@@ -1,0 +1,33 @@
+.post_background {
+    border: 5pc;
+    border-color:red;
+    border-radius: 10px;
+
+    background-color: beige;
+    text-align: left;
+    width: 60vw;
+    margin: auto;
+    margin-bottom: 2vh;
+    margin-top: 2vh;
+    height: 100px;
+}
+
+.post_username {
+    margin-left: 3vw;
+    margin-top: 1vh;
+    color: black;
+}
+
+.post_content {
+    margin-left:3vw;
+    margin-right: 3wv;
+    margin-bottom: 1vh;
+    color: black;
+    max-height: 15vh;
+    overflow-y: scroll;    
+}
+
+::-webkit-scrollbar {
+    width: 0px;
+    background: transparent; /* make scrollbar transparent */
+}
