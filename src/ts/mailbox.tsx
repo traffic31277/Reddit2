@@ -1,10 +1,15 @@
 import React from 'react';
 import '../css/mailbox.css';
+import { useNavigate } from 'react-router-dom';
 
-export default function SuggestionPage() {
-  const handleSubmit = () => {
-    alert('Submit suggestion clicked!');
+
+export default function MyComponent() {
+  const navigate = useNavigate();
+
+  const handleNavigate = () => {
+    navigate('/suggestion'); 
   };
+
 
   return (
     <div className="suggestion-container">
@@ -16,7 +21,7 @@ export default function SuggestionPage() {
           className="mailbox-icon"
         />
 
-        <button className="submit-btn" onClick={handleSubmit}>
+        <button className="submit-btn" onClick={handleNavigate}>
           Submit Suggestion
         </button>
       </main>

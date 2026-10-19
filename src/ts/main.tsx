@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { Authenticator } from '@aws-amplify/ui-react';
+import { BrowserRouter } from 'react-router-dom';
 import { Amplify } from "aws-amplify";
 import App from './App.tsx';
 
@@ -17,7 +18,9 @@ import '../css/index.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
+    <BrowserRouter>
       <Login />
       <Mailbox />
+    </BrowserRouter>
   </React.StrictMode>
 );
