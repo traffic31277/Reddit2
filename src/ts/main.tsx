@@ -6,8 +6,9 @@ import App from './App.tsx';
 // import Leaderboard from './Leaderboard/leaderboard.tsx';
 import Login from './Login/Login.tsx';
 
+import Leaderboard from './leaderboard_page.tsx';
 import '@aws-amplify/ui-react/styles.css';
-import './index.css';
+import '../css/index.css';
 
 // Finds the HTML element with id="root" and renders the React application inside it
 ReactDOM.createRoot(document.getElementById('root')!).render(
