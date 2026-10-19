@@ -5,10 +5,22 @@ import { withAuthenticator } from '@aws-amplify/ui-react';
 import { Authenticator } from '@aws-amplify/ui-react';
 import outputs from '../amplify_outputs.json';
 
+// generate database based on Schema
+const client = generateClient<Schema>();
+
+// list all messages in the datbase's model (Message)
+const { data } = await client.models.Message.list();
+
+// create a message
+const { errors, data: newMessage } = await client.models.Message.create({
+  text: 'My message text'
+});
+
+
 function App({}) {
   return (
     <div>
-      <h1>Hello this is the dev branch</h1>
+      <h1>YESYESYES</h1>
     </div>
   );
 }

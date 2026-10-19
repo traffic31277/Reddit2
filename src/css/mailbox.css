@@ -1,0 +1,49 @@
+
+.suggestion-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #fbf7db 0%, #c1ebd9 100%);
+  font-family: system-ui, -apple-system, sans-serif;
+  box-sizing: border-box;
+}
+
+.content-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.mailbox-icon {
+  width: 220px;
+  max-width: 80vw;
+  height: auto;
+  margin-bottom: 50px;
+}
+
+
+.submit-btn {
+  background-color: #ffffff;
+  border: 2px solid #2d6a3f;
+  border-radius: 20px;
+  padding: 16px 40px;
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: #000000;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.1s ease, background-color 0.2s;
+}
+
+.submit-btn:hover {
+  background-color: #f7f7f7;
+}
+
+.submit-btn:active {
+  transform: scale(0.98);
+}
+
