@@ -38,6 +38,15 @@ function MakeSuggestion() {
         });
     }
 
+    async function callBackend() {
+        alert("Hello");
+        await client.models.User.create({
+            pseudonym: "",
+            hasSuggestion: false
+        })
+        alert("Goodbye");
+    }
+
     return (
         <main>
             <h1>Make Your Suggestion!</h1>
@@ -53,6 +62,11 @@ function MakeSuggestion() {
             <div>
                 <button className='suggestion_button'
                     onClick={addSuggestion}>Submit Suggestion
+                </button>
+            </div>
+            <div>
+                <button className='suggestion_button'
+                    onClick={callBackend}>test backend
                 </button>
             </div>
         </main>

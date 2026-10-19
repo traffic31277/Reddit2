@@ -1,6 +1,14 @@
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
+import { weeklyReset } from '../weekly_reset/resource';
 
 const schema = a.schema({
+  // PseudonymPool: a.model({
+  //   key: a.id().required(),
+  //   word: a.string()
+  // }),
+  UsedPseudonyms: a.model({
+    id: a.id().required(),
+  }),
   User: a.model({
     pseudonym: a.string().required(),
     hasSuggestion: a.boolean().required() // Could remove this, only used on make suggestion page to prevent users from making multiple suggestions
@@ -12,7 +20,8 @@ const schema = a.schema({
   }),
 }).authorization((allow) => [
   // allow.owner(),
-  allow.publicApiKey()
+  allow.publicApiKey(),
+  allow.resource(weeklyReset),
 ]);
 
 export type Schema = ClientSchema<typeof schema>;
