@@ -39,12 +39,11 @@ function MakeSuggestion() {
     }
 
     async function callBackend() {
-        alert("Hello");
         await client.models.User.create({
             pseudonym: "",
             hasSuggestion: false
         })
-        alert("Goodbye");
+        alert("Test User Created and added to user table");
     }
 
     return (
@@ -66,7 +65,7 @@ function MakeSuggestion() {
             </div>
             <div>
                 <button className='suggestion_button'
-                    onClick={callBackend}>test backend
+                    onClick={callBackend}>create test user
                 </button>
             </div>
         </main>

@@ -11,14 +11,15 @@ const backend = defineBackend({
   weeklyReset,
 });
 
+// Access External PseudonymPool Table
 const stack = backend.createStack("ExternalResources");
-
 const pseudonymPool = dynamodb.Table.fromTableName(
   stack,
   "PseudonymPool",
   "PseudonymPool"
 );
 
+// Grant the weeklyReset function read access to the external table
 pseudonymPool.grantReadData(
   backend.weeklyReset.resources.lambda
 );

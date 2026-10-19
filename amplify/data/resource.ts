@@ -2,10 +2,6 @@ import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
 import { weeklyReset } from '../weekly_reset/resource';
 
 const schema = a.schema({
-  // PseudonymPool: a.model({
-  //   key: a.id().required(),
-  //   word: a.string()
-  // }),
   UsedPseudonyms: a.model({
     id: a.id().required(),
   }),

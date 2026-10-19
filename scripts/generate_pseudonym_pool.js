@@ -647,17 +647,14 @@ async function makePoolEntries() {
         }));
  
     }
-
-    // console.log(`Wrote ${written}/${items.length} entries`);
 }
-
 
 async function main() {
     if (!TABLE_NAME?.startsWith("PseudonymPool")) {
         throw new Error("The table name needs to be added as an argument (go to dynamoDB and find the table called PseudonymPool");
     }
 
-    console.log(`Populating Pseudonym pool in ${TABLE_NAME}...`);
+    console.log(`Populating Pseudonym pool`);
     await makePoolEntries();
     console.log("Successfully populated Pseudonym pool.");
 }
