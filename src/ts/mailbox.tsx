@@ -6,13 +6,10 @@ import MakeSuggestions from './MakeSuggestion';
 import { useNavigate } from 'react-router-dom';
 
 function Mailbox() {
-
-  const handleNavigation = () => {
     const navigate = useNavigate();
 
     const handleNavigation = () => {
     navigate('/MakeSuggestion'); 
-    };
   };
 
   return (
