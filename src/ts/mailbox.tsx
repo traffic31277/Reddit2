@@ -1,6 +1,7 @@
 import React from 'react';
 import '../css/mailbox.css';
 import '../css/index.css';
+import NavigationBar from './navbar';
 
 function Mailbox() {
 
@@ -22,6 +23,7 @@ function Mailbox() {
           Submit Suggestion
         </button>
       </main>
+      <NavigationBar />
     </div>
   );
 }

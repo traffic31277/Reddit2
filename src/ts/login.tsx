@@ -2,8 +2,9 @@ import { useState } from 'react';
 import React from 'react';
 import { signIn } from 'aws-amplify/auth';
 import '../css/login.css';
+import NavigationBar from './navbar';
 
-export default function App() {
+export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -56,6 +57,7 @@ export default function App() {
           {loading ? 'Logging in...' : 'Login'}
         </button>
       </div>
+      <NavigationBar />
     </div>
   );
 }

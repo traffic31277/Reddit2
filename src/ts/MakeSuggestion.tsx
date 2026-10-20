@@ -4,10 +4,13 @@
     10/17/2026
 */
 
-import "./MakeSuggestion.css";
+import "../css/MakeSuggestion.css";
 import type { Schema } from '../amplify/data/resource';
 import { generateClient } from 'aws-amplify/data';
 import { useState } from 'react';
+import NavigationBar from "./navbar";
+import React from 'react';
+import ReactDOM from 'react-dom/client';
 
 const client = generateClient<Schema>();
 
@@ -55,6 +58,7 @@ function MakeSuggestion() {
                     onClick={addSuggestion}>Submit Suggestion
                 </button>
             </div>
+            <NavigationBar />
         </main>
     )
 };
