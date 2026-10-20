@@ -9,7 +9,7 @@ function Mailbox() {
     const navigate = useNavigate();
 
     const handleNavigation = () => {
-    navigate('/MakeSuggestion'); 
+    navigate('/suggest'); 
   };
 
   return (

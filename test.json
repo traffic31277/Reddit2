@@ -1,0 +1,77 @@
+{
+    "Items": [
+        {
+            "__typename": {
+                "S": "Suggestion"
+            },
+            "likes": {
+                "N": "0"
+            },
+            "userId": {
+                "S": "INSERT USER ID HERE"
+            },
+            "updatedAt": {
+                "S": "2026-10-18T17:36:51.994Z"
+            },
+            "createdAt": {
+                "S": "2026-10-18T17:36:51.994Z"
+            },
+            "text": {
+                "S": "Test Suggestion 77"
+            },
+            "id": {
+                "S": "69f9998f-fefb-427b-8b90-bee650765e58"
+            }
+        },
+        {
+            "__typename": {
+                "S": "Suggestion"
+            },
+            "likes": {
+                "N": "0"
+            },
+            "userId": {
+                "S": "INSERT USER ID HERE"
+            },
+            "updatedAt": {
+                "S": "2026-10-18T23:11:15.578Z"
+            },
+            "createdAt": {
+                "S": "2026-10-18T23:11:15.578Z"
+            },
+            "text": {
+                "S": "Hello"
+            },
+            "id": {
+                "S": "625981ad-a4c5-479d-affa-451749754b35"
+            }
+        },
+        {
+            "__typename": {
+                "S": "Suggestion"
+            },
+            "likes": {
+                "N": "0"
+            },
+            "userId": {
+                "S": "INSERT USER ID HERE"
+            },
+            "updatedAt": {
+                "S": "2026-10-18T17:35:50.124Z"
+            },
+            "createdAt": {
+                "S": "2026-10-18T17:35:50.124Z"
+            },
+            "text": {
+                "S": "Test Suggestion 76"
+            },
+            "id": {
+                "S": "1c4e177f-38d6-46d6-8570-66fcdff5a8f1"
+            }
+        }
+    ],
+    "Count": 3,
+    "ScannedCount": 3,
+    "ConsumedCapacity": null
+}
+// Suggestion-tn2p2qfkhrcbbd4x54e6zmjhmu-NONE

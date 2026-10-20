@@ -2,17 +2,19 @@ import { useState } from 'react'
 import React from 'react'
 import '../css/leaderboard_page.css'
 import NavigationBar from './navbar.tsx';
+import { selectAllItems, pullPosts } from './DynamoFunctions.ts';
+import type { Schema } from "../amplify/data/resource";
+import { generateClient } from "aws-amplify/data";
 
-
-const Post = ({username, content, comment_count=0}) => {
+const Post = ({username, content, comment_count=0}:{username:String; content: String; comment_count:Number}) => {
   // fill in with comments from aws (comment objects)
 
   return (  
-    <div class='post_background'>
-      <h2 class='post_username'>{username}</h2>
-      <p class='post_content'>{content}</p>
-      <div class='comments_background'> 
-        <b>comments</b> ({comment_count})
+    <div className='post_background'>
+      <h2 className='post_username'>{username}</h2>
+      <p className='post_content'>{content}</p>
+      <div className='comments_background'> 
+        <p><b>comments</b> {comment_count}</p>
       </div>
     </div>
   )
@@ -23,14 +25,14 @@ function Leadboard() {
 
   // This is the function that generates the list of posts,
   // Edit this to pull from db
-  const genPosts = () => {
-    let num = 10
-    for (let i = 0; i < num; i++) {
-        let user = 'Username'
-        let cont = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
-        posts.push(Post({username:user, content:cont}));
+  async function genPosts () {
+    let posts_list = await pullPosts();
+    for (let i = 0; i < posts_list.length; i++) {
+      console.log(i);
+      posts.push(Post({username:posts_list[0], content:posts_list[1], comment_count:Number(posts_list[2])}));
     }
-  };
+
+  }  
   
   genPosts();
 
