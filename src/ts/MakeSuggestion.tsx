@@ -54,8 +54,8 @@ function MakeSuggestion() {
             </div>
      
             <div>
-                <button className='suggestion_button'
-                    onClick={addSuggestion}>Submit Suggestion
+                <button className='suggestion_button' onClick={addSuggestion}>
+                    Submit Suggestion
                 </button>
             </div>
             <NavigationBar />
