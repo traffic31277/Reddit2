@@ -2,14 +2,13 @@ import React from 'react';
 import '../css/mailbox.css';
 import '../css/index.css';
 import NavigationBar from './navbar';
-import MakeSuggestions from './MakeSuggestion'; 
 import { useNavigate } from 'react-router-dom';
 
 function Mailbox() {
     const navigate = useNavigate();
 
     const handleNavigation = () => {
-    navigate('/MakeSuggestion'); 
+    navigate('/suggest'); 
   };
 
   return (
