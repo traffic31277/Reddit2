@@ -27,13 +27,13 @@ function MakeSuggestion() {
     async function listSuggestions() {
         const { data: suggestions} = await client.models.Suggestion.list();
 
-        alert(suggestions.map((suggestion) => suggestion.text).join('\n'));
+        console.log(suggestions.map((suggestion) => suggestion.text).join('\n'));
     }
 
     /* Changed the likes input from random, to 0 */
 
     async function addSuggestion() {
-        alert(text);
+        console.log("Adding new suggestion: " + text);
         await client.models.Suggestion.create({
             userId: "INSERT USER ID HERE",
             text: text,

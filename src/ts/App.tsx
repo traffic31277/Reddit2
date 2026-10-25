@@ -9,18 +9,18 @@ import outputs from '../amplify_outputs.json';
 const client = generateClient<Schema>();
 
 // list all messages in the datbase's model (Message)
-const { data } = await client.models.Message.list();
+// const { data } = await client.models.Message.list();
 
 // create a message
-const { errors, data: newMessage } = await client.models.Message.create({
-  text: 'My message text'
-});
+// const { errors, data: newMessage } = await client.models.Message.create({
+//   text: 'My message text'
+// });
 
 
 function App({}) {
   return (
     <div>
-      <h1>YESYESYES</h1>
+      <h1>test</h1>
     </div>
   );
 }

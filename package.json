@@ -21,8 +21,10 @@
     "react-router-dom": "^7.18.4"
   },
   "devDependencies": {
-    "@aws-amplify/backend": "^1.8.0",
-    "@aws-amplify/backend-cli": "^1.4.1",
+    "@aws-amplify/backend": "^1.25.1",
+    "@aws-amplify/backend-cli": "^1.10.0",
+    "@types/aws-lambda": "^8.10.164",
+    "@types/node": "^26.6.5",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",
     "@vitejs/plugin-react": "^6.1.1",
