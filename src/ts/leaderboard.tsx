@@ -4,7 +4,7 @@ import '../css/leaderboard_page.css'
 import NavigationBar from './navbar.tsx';
 import { selectAllItems, pullPosts } from './DynamoFunctions.ts';
 import type { Schema } from "../amplify/data/resource";
-import { generateClient } from "aws-amplify/data";
+import { client } from "../api/client";
 
 const Post = ({username, content, comment_count=0}:{username:String; content: String; comment_count:Number}) => {
   // fill in with comments from aws (comment objects)
@@ -20,8 +20,15 @@ const Post = ({username, content, comment_count=0}:{username:String; content: St
   )
 };
 
-
 function Leadboard() {
+  const [Suggestion, setSuggestion] = useState<Schema['Suggestion']['type'][]>([]);
+
+  const fetchSuggestions = async () => {
+    try {
+      const { data: items } = await client.model.
+    }
+  }
+
   const posts = [];
 
   // This is the function that generates the list of posts,
