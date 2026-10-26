@@ -3,12 +3,28 @@ import React from 'react';
 import { signIn } from 'aws-amplify/auth';
 import '../css/login.css';
 import NavigationBar from './navbar';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  if (user?.username) {
+    console.log('User is already logged in, navigating to homepage');
+    navigate('/mail');
+    return;
+  }
+
+  else {
+    console.log('current user is: ', user);
+  }
+
 
   const handleLogin = async () => {
     setError('');
@@ -19,11 +35,18 @@ export default function Login() {
       
       if (isSignedIn) {
         console.log('Logged in successfully!');
-       
       }
     } catch (err: any) {
       
-      setError(err.message || 'Failed to sign in. Please check your credentials.');
+      if (err == "There is already a signed in user.") {
+        console.log("There is already a signed in user.");
+        navigate('/mail');
+        return;
+      }
+
+      else {
+        setError(err.message || 'Failed to sign in. Please check your credentials.');
+      }
     } finally {
       setLoading(false);
     }

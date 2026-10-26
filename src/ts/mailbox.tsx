@@ -8,7 +8,7 @@ function Mailbox() {
     const navigate = useNavigate();
 
     const handleNavigation = () => {
-    navigate('/suggest'); 
+    navigate('/suggest');
   };
 
   return (
@@ -16,7 +16,7 @@ function Mailbox() {
    
       <main className="content-section">
         <img
-          src="/mailbox.png" 
+          src="/mailbox.png"
           alt="Mailbox with letter" 
           className="mailbox-icon"
         />
