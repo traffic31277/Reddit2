@@ -3,9 +3,13 @@ import { Amplify } from 'aws-amplify';
 import { generateClient } from 'aws-amplify/data';
 import type { EventBridgeHandler } from 'aws-lambda';
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient, GetCommand } from "@aws-sdk/lib-dynamodb";
+import { DynamoDBDocumentClient, GetCommand, PutCommand, DeleteCommand } from "@aws-sdk/lib-dynamodb";
 import { getAmplifyDataClientConfig } from '@aws-amplify/backend/function/runtime';
 import { env } from "$amplify/env/weekly-reset";
+
+// Table Names as Strings
+const PSEUDONYM_POOL_TABLE_NAME = "PseudonymPool";
+const USED_PSEUDONYMS_TABLE_NAME = "UsedPseudonyms";
 
 // Boilerplate needed to access the User Table
 const { resourceConfig, libraryOptions } = await getAmplifyDataClientConfig(env);
@@ -13,8 +17,7 @@ Amplify.configure(resourceConfig, libraryOptions);
 const userClient = generateClient<Schema>();
 
 // Boilerplate needed to access the PseudonymPool Table
-const pseudonymClient = DynamoDBDocumentClient.from( new DynamoDBClient({}));
-const tableName = "PseudonymPool";
+const externalClient = DynamoDBDocumentClient.from( new DynamoDBClient({}));
 
 // Generate a new random Pseudonym from the pool of words.
 async function generatePseudonym() {
@@ -24,9 +27,9 @@ async function generatePseudonym() {
   const animalKey = `ANIMAL${Math.floor(Math.random() * 100)}`;
 
   // Retrieve the adjective item from the PseudonymPool table with the random key.
-  const adjective = await pseudonymClient.send(
+  const adjective = await externalClient.send(
     new GetCommand({
-      TableName: tableName,
+      TableName: PSEUDONYM_POOL_TABLE_NAME,
       Key: {
         id: adjectiveKey
       },
@@ -34,9 +37,9 @@ async function generatePseudonym() {
   );
 
   // Retrieve the animal item from the PseudonymPool table with the random key.
-  const animal = await pseudonymClient.send(
+  const animal = await externalClient.send(
     new GetCommand({
-      TableName: tableName,
+      TableName: PSEUDONYM_POOL_TABLE_NAME,
       Key: {
         id: animalKey
       },
@@ -72,8 +75,15 @@ export const handler: EventBridgeHandler<"Scheduled Event", null, void> = async 
   for (const user of users) {
 
     // Delete the pseudonym of this user from the UsedPseudonyms table so it can be assigned again.
-    const { data: deletedPseudonym, errors } = await userClient.models.UsedPseudonyms.delete({ id: user.pseudonym });
-    console.log("Deleted Pseudonym" + deletedPseudonym?.id);
+    const response = await externalClient.send(
+      new DeleteCommand({
+        TableName: USED_PSEUDONYMS_TABLE_NAME,
+        Key: {
+          id: user.pseudonym
+        }
+      })
+    );
+    // console.log("Deleted Pseudonym" + deletedPseudonym?.id);
 
     uniqueCheck = false;
 
@@ -85,17 +95,29 @@ export const handler: EventBridgeHandler<"Scheduled Event", null, void> = async 
 
       // Check if the generated Pseudonym is currently being used 
       // by attempting to access an item from the UsedPseudonym table.
-      const { data: result, errors } = await userClient.models.UsedPseudonyms.get({ id: pseudonym });
-      console.log("Check result" + result?.id);
+      const response = await externalClient.send(
+        new GetCommand({
+          TableName: USED_PSEUDONYMS_TABLE_NAME,
+          Key: {
+            id: pseudonym, // Partition Key
+          }
+        })
+      );
+      console.log("Check result" + response?.Item?.id);
 
       // If the item access from the UsedPseudonym table fails (aka is null), the
       // pseudonym is currently unused and can thus be assigned.
-      if (result == null) {
+      if (!response.Item) {
 
         // Add the new pseudonym to the UsedPseudonym table so that it cannot be used again this week.
-        await userClient.models.UsedPseudonyms.create({
-          id: pseudonym,
-        });
+        await externalClient.send(
+          new PutCommand({
+            TableName: USED_PSEUDONYMS_TABLE_NAME,
+            Item: {
+              id: pseudonym, // Partition Key
+            }
+          })
+        );
 
         // Update this user's pseudonym field with the new pseudonym.
         await userClient.models.User.update({
@@ -109,8 +131,7 @@ export const handler: EventBridgeHandler<"Scheduled Event", null, void> = async 
         uniqueCheck = true;
       }
     }
-
-    console.log("Weekly Reset Complete");
   }
+  console.log("Weekly Reset Complete");
 }
 

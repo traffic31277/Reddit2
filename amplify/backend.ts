@@ -11,15 +11,36 @@ const backend = defineBackend({
   weeklyReset,
 });
 
-// Access External PseudonymPool Table
+// Access External Tables
 const stack = backend.createStack("ExternalResources");
 const pseudonymPool = dynamodb.Table.fromTableName(
   stack,
-  "PseudonymPool",
+  "ExternalPseudonymPoolTable",
   "PseudonymPool"
 );
+
+const usedPseudonyms = dynamodb.Table.fromTableName(
+  stack,
+  "ExternalUsedPseudonymsTable",
+  "UsedPseudonyms"
+);
+
+const suggestions = dynamodb.Table.fromTableName(
+  stack,
+  "ExternalSuggestionsTable",
+  "Suggestions"
+)
 
 // Grant the weeklyReset function read access to the external table
 pseudonymPool.grantReadData(
   backend.weeklyReset.resources.lambda
 );
+
+usedPseudonyms.grantReadWriteData(
+  backend.weeklyReset.resources.lambda
+);
+
+backend.data.addDynamoDbDataSource(
+  "ExternalSuggestionsTableDataSource",
+  suggestions
+)

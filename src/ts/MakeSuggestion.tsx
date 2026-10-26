@@ -5,7 +5,7 @@
 */
 
 import "../css/MakeSuggestion.css";
-import type { Schema } from '../amplify/data/resource';
+import type { Schema } from '../../amplify/data/resource';
 import { generateClient } from 'aws-amplify/data';
 import { useState } from 'react';
 import NavigationBar from "./navbar";
@@ -24,17 +24,17 @@ function MakeSuggestion() {
 
     /* listSuggestions() is not used in this iteration, might use it later */
 
-    async function listSuggestions() {
-        const { data: suggestions} = await client.models.Suggestion.list();
+    // async function listSuggestions() {
+    //     const { data: suggestions} = await client.models.Suggestion.list();
 
-        console.log(suggestions.map((suggestion) => suggestion.text).join('\n'));
-    }
+    //     console.log(suggestions.map((suggestion) => suggestion.text).join('\n'));
+    // }
 
     /* Changed the likes input from random, to 0 */
 
     async function addSuggestion() {
         console.log("Adding new suggestion: " + text);
-        await client.models.Suggestion.create({
+        await client.mutations.addSuggestion({
             userId: "INSERT USER ID HERE",
             text: text,
             likes: 0
