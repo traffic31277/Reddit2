@@ -1,10 +1,9 @@
-import { useState } from 'react';
-import React from 'react';
-import { signUp } from 'aws-amplify/auth';
+import React, { useState } from 'react';
+import { signUp, signOut, getCurrentUser } from 'aws-amplify/auth';
+
 import '../css/login.css';
 import NavigationBar from './navbar';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext'
 
 export default function Signup() {
     const [username, setUsername] = useState('');
@@ -13,25 +12,50 @@ export default function Signup() {
     const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
-    const { setUser } = useAuth();
 
+    // Runs at startup, checks for current user session information
+    const checkUserAuth = async () => {
+        try {
+            const { username, userId, signInDetails } = await getCurrentUser();
+        
+            console.log('User found!');
+            console.log('Username: ', username);
+            console.log('UserId: ', userId);
+            console.log('Sign-In Details: ', signInDetails);
+        }
+
+        catch (err: any) {
+            console.log('User not found!');
+        }
+    }
+
+    // checkUserAuth();
+
+    // Activates from Sign Up button, calls the signUp() function
     const handleSignup = async () => {
         setError('');
         setLoading(true);
 
         try {
-            const { isSignUpComplete, userId, nextStep } = await signUp({ username, password });
+            const { isSignUpComplete } = await signUp({ username, password });
             
+            // If isSignUpComplete is true, then verification step is complete, so go to login (Account complete)
             if (isSignUpComplete) {
                 console.log('Signed up successfully!');
-                setUser({ username, userId });
+                navigate('/login');
+            }
+
+            // If isSignUpComplete is false, then verification step needed, so verify (Account not complete yet)
+            else {
+                console.log('Missing verification step!');
                 navigate('/verify');
             }
         }
         
         catch (err: any) {
-            if (err.message == "User already exists") {
-                console.log('User already exists');
+            // If user is found in Cognito instance send to login page
+            if (err.message == 'User already exists') {
+                console.log('User already exists, navigating to login page');
                 navigate('/login');
             }
 
@@ -45,10 +69,22 @@ export default function Signup() {
         }
     };
 
+    // Signs the user out of the current session
+    const handleSignOut = async () => {
+        await signOut();
+        console.log('Signed out of current session!');
+    }
+
+    // Sends the user to the reset password page
+    const handleResetPassword = async () => {
+        console.log('Sending user to reset page!');
+        navigate('/reset');
+    }
+
     return (
         <div className="signup-page">
             <div className="signup-card">
-                <h1>Signup</h1>
+                <h1>Sign Up</h1>
 
                 <label htmlFor="email">Email</label>
                 <input
@@ -69,7 +105,15 @@ export default function Signup() {
                 {error && <div className="error-message" style={{ color: 'red', margin: '10px 0', fontSize: '14px' }}>{error}</div>}
 
                 <button type="button" onClick={handleSignup} disabled={loading}>
-                    {loading ? 'Signing in...' : 'Signup'}
+                    {loading ? 'Signing In...' : 'Sign Up'}
+                </button>
+
+                <button type="button" onClick={handleSignOut} disabled={loading}>
+                    {loading ? 'Signing Out...' : 'Sign Out'}
+                </button>
+
+                <button type="button" onClick={handleResetPassword} disabled={loading}>
+                    {loading ? 'Resetting Passsword...' : 'Reset Password'}
                 </button>
             </div>
             

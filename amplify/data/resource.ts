@@ -3,21 +3,18 @@ import { weeklyReset } from '../weekly_reset/resource';
 
 const schema = a.schema({
   User: a.model({
-    userId: a.id().required(),
     pseudonym: a.string().required(),
     hasSuggestion: a.boolean().required()
   }),
 
   Comment: a.model({
-    userId: a.id().required(),
     text: a.string().required(),
     likes: a.integer(),
     dislikes: a.integer()
   }),
 
   Suggestion: a.model({
-    userId: a.id().required(),
-    text: a.string().required(),
+    text: a.string(),
     likes: a.integer(),
     dislikes: a.integer()
   }),
@@ -28,8 +25,8 @@ const schema = a.schema({
 })
 
 .authorization((allow) => [
-  // allow.authenticated(),
-  allow.publicApiKey(),
+  allow.owner(),
+  allow.authenticated().to(['read']),
   allow.resource(weeklyReset)
 ]);
 
@@ -38,6 +35,6 @@ export type Schema = ClientSchema<typeof schema>;
 export const data = defineData({
   schema,
   authorizationModes: {
-    defaultAuthorizationMode: 'apiKey',
+    defaultAuthorizationMode: 'userPool',
   },
 });
