@@ -1,9 +1,3 @@
-/* 
-    Code Review
-    Mark Masenda
-    10/17/2026
-*/
-
 import "../css/MakeSuggestion.css";
 import type { Schema } from '../../amplify/data/resource';
 import { generateClient } from 'aws-amplify/data';
@@ -11,34 +5,39 @@ import { useState } from 'react';
 import NavigationBar from "./navbar";
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import profanity from 'allprofanity';
 
 const client = generateClient<Schema>();
 
 function MakeSuggestion() {
 
     const [text, setText] = useState("");
+    const [error, setError] = useState('');
 
     function handleChange(e) {
         setText(e.target.value);
     }
 
-    /* listSuggestions() is not used in this iteration, might use it later */
-
-    // async function listSuggestions() {
-    //     const { data: suggestions} = await client.models.Suggestion.list();
-
-    //     console.log(suggestions.map((suggestion) => suggestion.text).join('\n'));
-    // }
-
-    /* Changed the likes input from random, to 0 */
+    async function profanityCheck() {
+        // alert("testing: " + text);
+        const containsProfanity = profanity.check(text);
+        return containsProfanity;
+    }
 
     async function addSuggestion() {
-        console.log("Adding new suggestion: " + text);
-        await client.mutations.addSuggestion({
-            userId: "INSERT USER ID HERE",
-            text: text,
-            likes: 0
-        });
+        if (await profanityCheck()) {
+            setError("No profanity allowed :)")
+        }
+        else {
+            setError("");
+            console.log("Adding new suggestion: " + text);
+            await client.mutations.addSuggestion({
+                userId: "INSERT USER ID HERE",
+                currentPseudonym: "INSERT USERS PSEUDONYM HERE",
+                text: text,
+                likes: 0
+            });
+        }
     }
 
     return (
@@ -54,6 +53,7 @@ function MakeSuggestion() {
             </div>
      
             <div>
+                <div className='error_message'>{error}</div>
                 <button className='suggestion_button' onClick={addSuggestion}>
                     Submit Suggestion
                 </button>

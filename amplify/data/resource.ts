@@ -11,6 +11,7 @@ const schema = a.schema({
   }),
   Suggestion: a.customType({
     userId: a.string().required(),
+    currentPseudonym: a.string().required(),
     text: a.string().required(),
     likes: a.integer()
   }),
@@ -22,6 +23,7 @@ const schema = a.schema({
     .arguments({
       id: a.id(),
       userId: a.string().required(),
+      currentPseudonym: a.string().required(),
       text: a.string(),
       likes: a.integer(),
     })

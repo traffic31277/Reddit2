@@ -21,6 +21,10 @@
     border-radius: 5px;
 }
 
+.error_message {
+    font-size: 12px;
+    color: red;
+}
 /*
 # note from your good friend lily -- 
 - margin determines the space between two objects ON THE OUTSIDE
