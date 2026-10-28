@@ -5,15 +5,17 @@ import NavigationBar from './navbar.tsx';
 import { selectAllItems, pullPosts } from './DynamoFunctions.ts';
 // import type { Schema } from "../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { S3Client } from "@aws-sdk/client-s3";
 import {
   DynamoDBDocumentClient,
   ExecuteStatementCommand,
   BatchExecuteStatementCommand,
 } from "@aws-sdk/lib-dynamodb";
 import { fromIni, fromCognitoIdentityPool } from "@aws-sdk/credential-providers";
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { marshall } from '@aws-sdk/util-dynamodb'
 
-const Post = ({username, content, comment_count=0}={username:String, content:String, comment_count:Number}) => {
+const Post = ({username, content, comment_count=0}={username:'', content:'', comment_count:''}) => {
   // fill in with comments from aws (comment objects)
 
 	return (  
@@ -28,15 +30,18 @@ const Post = ({username, content, comment_count=0}={username:String, content:Str
 };
 
 function Leaderboard() {
-  let [posts, setPosts] = useState("POSTS COULD NOT BE FETCHED");
+  let [posts, setPosts] = useState<any[]>();
   
   // This is the function that generates the list of posts,
   useEffect(() => {
     async function getPosts() {
-      let tableName = "Suggestion-kdkurq2ol5e2fcf73yfe5ta44e-NONE"
+      let tableName = "Suggestions"
       const client = new DynamoDBClient(
-        { profile:"default", 
+        {
           region:"us-east-2",
+          credentials: fromCognitoIdentityPool({
+            identityPoolId: 'us-east-2:12e12612-5d7f-4e29-b566-432accd9bcca',
+          }),
         });
       const docClient = DynamoDBDocumentClient.from(client);
       const params = {
@@ -46,7 +51,22 @@ function Leaderboard() {
       try {
         const data = await docClient.send(new ExecuteStatementCommand(params));
         console.log("Items retrieved successfully");
-        setPosts(String(data));
+        
+        let post_list = data.Items
+        let posts_temp = []
+        // add try/except for that
+
+        for (let i = 0; i < post_list.length; i++) {
+          let post = JSON.parse(JSON.stringify(post_list[i]))
+
+          posts_temp.push(Post({ 
+            username: String(post.userId), 
+            content: String(post.text),
+            comment_count: String(0)
+          }))
+        }
+
+        setPosts(posts_temp)
 
       } catch (err) {
 
@@ -56,23 +76,15 @@ function Leaderboard() {
     }
 
     getPosts();
-  }, [posts]);
+  }, []);
   
-  function render_posts () {
-    if (posts == "1") {
-      posts = "0";
-    } else {
-      posts = "1"
-    }
-  }
 
   return (
     <>
     <div>
       <h1>Weekly Leaderboard</h1>
     </div>
-    <p>{posts}</p>
-    <button onClick={render_posts}>RENDER</button>
+    <div>{posts}</div>
     <NavigationBar />
     </>
   )
