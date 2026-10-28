@@ -15,8 +15,6 @@ const schema = a.schema({
     text: a.string().required(),
     likes: a.integer()
   }),
-
-
     
   addSuggestion: a
     .mutation()

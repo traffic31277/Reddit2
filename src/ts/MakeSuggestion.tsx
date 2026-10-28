@@ -26,7 +26,7 @@ function MakeSuggestion() {
 
     async function addSuggestion() {
         if (await profanityCheck()) {
-            setError("No profanity allowed :)")
+            setError("No profanity allowed :)");
         }
         else {
             setError("");
