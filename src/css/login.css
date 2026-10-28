@@ -18,6 +18,12 @@
     color: black;
 }
 
+.login-card {
+    margin-top: 10px; 
+    border-radius: 5px;
+    padding-bottom: 200px;
+}
+
 .post_content {
     margin-left:3vw;
     margin-right: 3wv;

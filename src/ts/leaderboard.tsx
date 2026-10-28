@@ -16,15 +16,15 @@ import { fromIni, fromCognitoIdentityPool } from "@aws-sdk/credential-providers"
 const Post = ({username, content, comment_count=0}={username:String, content:String, comment_count:Number}) => {
   // fill in with comments from aws (comment objects)
 
-  return (  
-    <div className='post_background'>
-      <h2 className='post_username'>{username}</h2>
-      <p className='post_content'>{content}</p>
-      <div className='comments_background'> 
-        <p><b>comments</b> {comment_count}</p>
-      </div>
-    </div>
-  )
+	return (  
+		<div className='post_background'>
+			<h2 className='post_username'>{username}</h2>
+			<p className='post_content'>{content}</p>
+			<div className='comments_background'> 
+				<p><b>comments</b> {comment_count}</p>
+			</div>
+		</div>
+	)
 };
 
 function Leaderboard() {
