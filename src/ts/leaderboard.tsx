@@ -15,15 +15,20 @@ import { fromIni, fromCognitoIdentityPool } from "@aws-sdk/credential-providers"
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { marshall } from '@aws-sdk/util-dynamodb'
 
-const Post = ({username, content, comment_count=0}={username:'', content:'', comment_count:''}) => {
+const Post = ({username, content, comment_count=0, like_count, order_id=0}={username:'', content:'', comment_count:'', like_count:'', order_id:''}) => {
   // fill in with comments from aws (comment objects)
+  let user = username
+  let text = content 
+  let comments = comment_count
+  let likes = like_count
+  let id = order_id
 
 	return (  
 		<div className='post_background'>
-			<h2 className='post_username'>{username}</h2>
-			<p className='post_content'>{content}</p>
+			<h2 className='post_username'>{user}</h2>
+			<p className='post_content'>{text}</p>
 			<div className='comments_background'> 
-				<p><b>comments</b> {comment_count}</p>
+				<p><b>comments</b> {comments}</p>
 			</div>
 		</div>
 	)
@@ -35,7 +40,6 @@ function Leaderboard() {
   // This is the function that generates the list of posts,
   useEffect(() => {
     async function getPosts() {
-      let tableName = "Suggestions"
       const client = new DynamoDBClient(
         {
           region:"us-east-2",
@@ -45,7 +49,7 @@ function Leaderboard() {
         });
       const docClient = DynamoDBDocumentClient.from(client);
       const params = {
-        Statement: `SELECT * FROM "${tableName}"`,
+        Statement: `SELECT * FROM Suggestions`,
       };
 
       try {
@@ -62,7 +66,8 @@ function Leaderboard() {
           posts_temp.push(Post({ 
             username: String(post.userId), 
             content: String(post.text),
-            comment_count: String(0)
+            comment_count: String(0),
+            like_count: String(post.likes)
           }))
         }
 
@@ -78,12 +83,51 @@ function Leaderboard() {
     getPosts();
   }, []);
   
+  function sort_likes() {
+    console.log("sorted by likes")
+    let min = 0
+    
+    // seletion sort
+    for (let i = 0; i < posts.length-1; i++) {
+      min = i
+        for (let j = i + 1; j < n; j++) {
+          if (posts[j].likes > posts[min].likes) {
+              min = j;
+            }
+        }
+
+      let temp = posts[i];
+      posts[i] = posts[min];
+      posts[min] = temp;
+    }
+  };
+
+  function sort_recency() {
+    console.log("sorted by recency")
+    let min = 0
+    
+    // seletion sort
+    for (let i = 0; i < posts.length-1; i++) {
+      min = i
+        for (let j = i + 1; j < n; j++) {
+          if (posts[j].id > posts[min].id) {
+              min = j;
+            }
+        }
+
+      let temp = posts[i];
+      posts[i] = posts[min];
+      posts[min] = temp;
+    }
+  };
 
   return (
     <>
     <div>
       <h1>Weekly Leaderboard</h1>
     </div>
+    <button onClick={sort_likes}>SORT BY LIKES</button>
+    <button onClick={sort_recency}>SORT BY NEWEST</button>
     <div>{posts}</div>
     <NavigationBar />
     </>
