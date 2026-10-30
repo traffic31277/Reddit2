@@ -17,6 +17,7 @@ export default function Verification() {
         try {
             await confirmSignUp({ username, confirmationCode });
             console.log('Account Verified!');
+            navigate('/login');
         }
 
         catch (err: any) {
