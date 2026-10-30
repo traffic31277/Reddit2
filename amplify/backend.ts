@@ -7,8 +7,7 @@ import { weeklyReset } from './weekly_reset/resource'
 
 const backend = defineBackend({
   auth,
-  data,
-  weeklyReset,
+  data
 });
 
 // Access External PseudonymPool Table
@@ -20,6 +19,6 @@ const pseudonymPool = dynamodb.Table.fromTableName(
 );
 
 // Grant the weeklyReset function read access to the external table
-pseudonymPool.grantReadData(
-  backend.weeklyReset.resources.lambda
-);
+// pseudonymPool.grantReadData(
+//   backend.weeklyReset.resources.lambda
+// );

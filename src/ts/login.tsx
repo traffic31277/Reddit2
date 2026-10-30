@@ -7,7 +7,21 @@ import NavigationBar from './navbar';
 import { useNavigate } from 'react-router-dom';
 import { getCurrentUser } from 'aws-amplify/auth';
 
+import { DynamoDBDocumentClient, PutCommand, GetCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
+import { fromIni, fromCognitoIdentityPool } from "@aws-sdk/credential-providers";
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+
+
 export default function Login() {
+	const client = new DynamoDBClient(
+		{
+			region:"us-east-2",
+			credentials: fromCognitoIdentityPool({
+				identityPoolId: 'us-east-2:12e12612-5d7f-4e29-b566-432accd9bcca',
+			}),
+		});
+		const docClient = DynamoDBDocumentClient.from(client);
+	
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
 	const [error, setError] = useState('');
@@ -50,6 +64,45 @@ export default function Login() {
 			try {
 				await signIn({ username, password });
 				console.log('Logged in successfully!');
+
+				try {
+					const { userId } = await getCurrentUser();
+
+					const response = await docClient.send(
+						new GetCommand({
+							TableName: "Users",
+							Key: {
+								userId: userId
+							}
+						})
+					)
+
+					if (response.Item) {
+						console.log("Response: ", response.Item);
+						console.log("User is already in the Users table!");
+					}
+
+					else {
+						await docClient.send(
+							new PutCommand({
+								TableName: "Users",
+								Item: {
+									userId: userId,
+									pseudonym: "INSERT PSEUDONYM HERE",
+									hasSuggestion: false
+								}
+							})
+						);
+
+						console.log("Created user in Users table!");
+					}
+				}
+
+				catch (err: any) {
+					console.error("Creating user account failed", err.message);
+				}
+
+				console.log("Sending user to mail homepage!");
 				navigate('/mail');
 			} 
 			

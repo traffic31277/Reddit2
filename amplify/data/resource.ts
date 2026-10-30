@@ -9,8 +9,7 @@ const schema = a.schema({
 	})
 	.identifier(['userId'])
 	.authorization((allow) => [
-		allow.ownerDefinedIn('userId'),
-		allow.resource(weeklyReset),
+		allow.ownerDefinedIn('userId')
 	]),
 
 
@@ -19,44 +18,23 @@ const schema = a.schema({
 		text: a.string().required(),
 	})
 	.authorization((allow) => [
-		allow.ownerDefinedIn('userId'),
-		allow.authenticated().to(['read']),
-		allow.resource(weeklyReset),
+		allow.ownerDefinedIn('userId')
 	]),
 
 
 	Suggestion: a.model({
 		userId: a.string(),
 		text: a.string(),
-	})
-	.authorization((allow) => [
-		allow.ownerDefinedIn('userId'),
-		allow.authenticated().to(['read']),
-		allow.resource(weeklyReset),
-	]),
-
-
-	Vote: a.model({
-		userId: a.string(),
-		targetId: a.id().required(),
-		value: a.integer().required()
-	})
-	.secondaryIndexes((index) => [index('targetId')])
-	.authorization((allow) => [
-		allow.ownerDefinedIn('userId'),
-		allow.authenticated().to(['read']),
-		allow.resource(weeklyReset),
+	})	.authorization((allow) => [
+		allow.ownerDefinedIn('userId')
 	]),
 
 
 	UsedPseudonyms: a.model({
 		pseudonym: a.string().required(),
-	})
-	.authorization((allow) => [
-		allow.ownerDefinedIn('userId'),
-		allow.authenticated().to(['create', 'read']),
-		allow.resource(weeklyReset)
-	]),
+	}).authorization((allow) => [
+		allow.owner()
+	])
 });
 
 export type Schema = ClientSchema<typeof schema>;
