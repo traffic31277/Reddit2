@@ -6,8 +6,7 @@ import { data } from './data/resource';
 import { weeklyReset } from './weekly_reset/resource'
 
 const backend = defineBackend({
-  auth,
-  data
+  auth
 });
 
 // Access External PseudonymPool Table
