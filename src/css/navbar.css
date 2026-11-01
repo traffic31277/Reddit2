@@ -1,14 +1,26 @@
+.navbar {
+  margin:auto;
+}
+
 .navbar li{ 
     display:inline-block;
     border: solid 5px white;
     background-color: darkcyan;
-    padding: 20px;
     list-style-type: none;
-    width: 25vw;
+    width: 20vw;
+    height: 75px;
     margin: auto;
     text-decoration: none;
     overflow: auto;
 }
+
+.navButton h2 {
+  display: inline-block;
+  vertical-align: middle;
+  line-height: normal;
+  padding: 5px;
+}
+
 
 :root {
   --text: #6b6375;

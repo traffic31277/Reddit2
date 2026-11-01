@@ -1,3 +1,13 @@
+.sort_button {
+    width:20vw;
+    float: center;
+    margin: auto;
+    margin-left: 5vw;
+    border-radius: 20px;
+    background-color: beige;
+    color: black;
+    font-weight: bold;
+  }
 
 .post_background {
     border: 5pc;

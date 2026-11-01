@@ -145,12 +145,14 @@ function Leaderboard() {
   return (
     <>
     <div>
-      <h1>Weekly Leaderboard</h1>
+      <h1 className='heading'>Weekly Leaderboard</h1>
     </div>
-    <button onClick={sort_likes}>SORT BY LIKES</button>
-    <button onClick={sort_recency}>SORT BY NEWEST</button>
+    <div>
+      <NavigationBar />
+      <button className='sort_button' onClick={sort_likes}>LIKES</button>
+      <button className='sort_button' onClick={sort_recency}>NEWEST</button>
+    </div>
     <div>{posts}</div>
-    <NavigationBar />
     </>
   )
 }
