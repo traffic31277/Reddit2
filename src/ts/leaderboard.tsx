@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import React from 'react'
 import '../css/leaderboard_page.css'
 import NavigationBar from './navbar.tsx';
 import { selectAllItems, pullPosts } from './DynamoFunctions.ts';
-// import type { Schema } from "../amplify/data/resource";
+// import type { Schema } from "../amplify/data/resourcs";
 import { generateClient } from "aws-amplify/data";
 import { S3Client } from "@aws-sdk/client-s3";
 import {
@@ -14,6 +14,7 @@ import {
 import { fromIni, fromCognitoIdentityPool } from "@aws-sdk/credential-providers";
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { marshall } from '@aws-sdk/util-dynamodb'
+import { getPositionOfLineAndCharacter } from 'typescript';
 
 const Post = ({username, content, comment_count=0, like_count, order_id}={username:'', content:'', comment_count:'', like_count:'', order_id:''}) => {
   // fill in with comments from aws (comment objects)
@@ -37,6 +38,7 @@ const Post = ({username, content, comment_count=0, like_count, order_id}={userna
 
 function Leaderboard() {
   let [posts, setPosts] = useState<any[]>();
+  let [resorted, setResorted] = useState(0);
   
   // This is the function that generates the list of posts,
   useEffect(() => {
@@ -85,6 +87,11 @@ function Leaderboard() {
     getPosts();
   }, []);
   
+  // updates listing
+  useEffect(() => {
+    console.log(posts)
+  }, [resorted]);
+
   function sort_likes() {
     console.log("sorted by likes")
     let temp_posts = posts
@@ -93,20 +100,21 @@ function Leaderboard() {
 
     // seletion sort
     for (let i = 0; i < n; i++) {
-      min = i
-      for (let j = i + 1; j < n; j++) {
-        if (temp_posts[j].props.children[2].props.children[1].props.id > temp_posts[min].props.children[2].props.children[1].props.id) {
-              min = j;
-          }
+    min = i
+    for (let j = i + 1; j < n; j++) {
+      if (temp_posts[j].props.children[2].props.children[1].props.id > temp_posts[min].props.children[2].props.children[1].props.id) {
+        min = j;
       }
-
-      let temp = temp_posts[i];
-      temp_posts[i] = temp_posts[min];
-      temp_posts[min] = temp;
     }
-  
-    setPosts(temp_posts)
-  };
+
+    let temp = temp_posts[i];
+    temp_posts[i] = temp_posts[min];
+    temp_posts[min] = temp;
+    };
+
+    setPosts(temp_posts);
+    setResorted(resorted + 1);
+    };
 
   function sort_recency() {
     console.log("sorted by recency")
@@ -129,8 +137,9 @@ function Leaderboard() {
 
     }
 
-    console.log(temp_posts)
-    setPosts(temp_posts)
+    setPosts(temp_posts);
+    setResorted(resorted + 1);
+
   };
 
   return (
