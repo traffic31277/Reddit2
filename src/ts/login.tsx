@@ -7,7 +7,29 @@ import NavigationBar from './navbar';
 import { useNavigate } from 'react-router-dom';
 import { getCurrentUser } from 'aws-amplify/auth';
 
+import { DynamoDBDocumentClient, PutCommand, GetCommand } from "@aws-sdk/lib-dynamodb";
+import { fromCognitoIdentityPool } from "@aws-sdk/credential-providers";
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+
+import type { Schema } from '../../amplify/data/resource';
+import { Amplify } from "aws-amplify"
+import { generateClient } from 'aws-amplify/data';
+import outputs from "../../amplify_outputs.json"
+
+Amplify.configure(outputs)
+
 export default function Login() {
+	const dynamoClient = new DynamoDBClient(
+		{
+			region:"us-east-2",
+			credentials: fromCognitoIdentityPool({
+				identityPoolId: 'us-east-2:12e12612-5d7f-4e29-b566-432accd9bcca',
+			}),
+		});
+	const docClient = DynamoDBDocumentClient.from(dynamoClient);
+
+	const schemaClient = generateClient<Schema>();
+	
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
 	const [error, setError] = useState('');
@@ -50,6 +72,59 @@ export default function Login() {
 			try {
 				await signIn({ username, password });
 				console.log('Logged in successfully!');
+
+				try {
+					// Get the userId
+					const { userId } = await getCurrentUser();
+
+					// Try to access the user from the Users table
+					const response = await docClient.send(
+						new GetCommand({
+							TableName: "Users",
+							Key: {
+								userId: userId
+							}
+						})
+					)
+
+					// If the GetCommand succeeded, this user already exists and doesn't need to be added
+					if (response.Item) {
+						console.log("Response: ", response.Item);
+						console.log("User is already in the Users table!");
+					}
+
+					// If the GetCommand failed, add them to the Users table
+					else {
+
+						// Create a new item in the Users table.
+						await docClient.send(
+							new PutCommand({
+								TableName: "Users",
+								Item: {
+									userId: userId,
+									pseudonym: "PLACEHOLDER",
+									hasSuggestion: false
+								}
+							})
+						);
+						console.log("Created user in Users table!");
+					}
+
+					// Assign the user a Pseudonym if they dont already have one
+					if (!response.Item || response.Item.pseudonym === "PLACEHOLDER") {
+						const { data, errors } = await schemaClient.queries.assignPseudonym({
+							userId: userId,
+						});
+
+						console.log(`Pseudonym is: ${data}`);
+					}
+				}
+
+				catch (err: any) {
+					console.error("Creating user account failed", err.message);
+				}
+
+				console.log("Sending user to mail homepage!");
 				navigate('/mail');
 			} 
 			

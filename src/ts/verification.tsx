@@ -5,7 +5,7 @@ import '../css/login.css';
 import NavigationBar from './navbar';
 import { useNavigate } from 'react-router-dom';
 
-export default function Verification() {
+export default function Verification() {    
     const [username, setEmail] = useState('');
     const [confirmationCode, setConfirmationCode] = useState('');
     const [error, setError] = useState('');

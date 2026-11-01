@@ -71,8 +71,16 @@ export default function Signup() {
 
     // Signs the user out of the current session
     const handleSignOut = async () => {
+        setLoading(true);
         await signOut();
+        setLoading(false);
         console.log('Signed out of current session!');
+    }
+
+    // Sends the user to the login page
+    const handleLogin = async () => {
+        console.log('Sending user to login page!');
+        navigate('/login');
     }
 
     // Sends the user to the reset password page
@@ -110,6 +118,10 @@ export default function Signup() {
 
                 <button type="button" onClick={handleSignOut} disabled={loading}>
                     {loading ? 'Signing Out...' : 'Sign Out'}
+                </button>
+
+                <button type="button" onClick={handleLogin} disabled={loading}>
+                    {loading ? 'Signing Out...' : 'Log In'}
                 </button>
 
                 <button type="button" onClick={handleResetPassword} disabled={loading}>

@@ -4,11 +4,13 @@ import { defineBackend } from '@aws-amplify/backend';
 import { auth } from './auth/resource';
 import { data } from './data/resource';
 import { weeklyReset } from './weekly_reset/resource'
+import { assignPseudonym } from "./assign_pseudonym/resource";
 
 const backend = defineBackend({
   auth,
   data,
-  weeklyReset,
+  assignPseudonym,
+  weeklyReset
 });
 
 // Access External Tables
@@ -25,22 +27,44 @@ const usedPseudonyms = dynamodb.Table.fromTableName(
   "UsedPseudonyms"
 );
 
+const users = dynamodb.Table.fromTableName(
+  stack,
+  "ExternalUsersTable",
+  "Users"
+);
+
 const suggestions = dynamodb.Table.fromTableName(
   stack,
   "ExternalSuggestionsTable",
   "Suggestions"
 )
 
+// Reference the Lambda functions
+const weeklyResetLambda = backend.weeklyReset.resources.lambda;
+const assignPseudonymLambda = backend.assignPseudonym.resources.lambda;
+
 // Grant the weeklyReset function read access to the external table
 pseudonymPool.grantReadData(
-  backend.weeklyReset.resources.lambda
+  weeklyResetLambda
+);
+
+pseudonymPool.grantReadData(
+  assignPseudonymLambda
 );
 
 usedPseudonyms.grantReadWriteData(
-  backend.weeklyReset.resources.lambda
+  weeklyResetLambda
 );
 
-backend.data.addDynamoDbDataSource(
-  "ExternalSuggestionsTableDataSource",
-  suggestions
-)
+usedPseudonyms.grantReadWriteData(
+  assignPseudonymLambda
+);
+
+users.grantReadWriteData(
+  weeklyResetLambda
+);
+
+users.grantReadWriteData(
+  assignPseudonymLambda
+);
+

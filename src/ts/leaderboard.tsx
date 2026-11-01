@@ -22,11 +22,34 @@ const Post = ({username, content, comment_count=0}:{username:String; content: St
 
 function Leadboard() {
 	const [error, setError] = useState('');
-	const [Suggestion, setSuggestion] = useState<Schema['Suggestion']['type'][]>([]);
 
 	// Test function for working with the schema
 	const fetchSuggestions = async () => {
+		const [Suggestion, setSuggestion] = useState<Schema['Suggestion']['type'][]>([]);
 		setError('');
+
+		setSuggestion([
+			{
+				text: "This is sample text",
+				likes: 2,
+				dislikes: 0
+			},
+
+			{
+				text: "This is sample text",
+				likes: 3,
+				dislikes: 1
+			},
+
+			{
+				text: "This is sample text",
+				likes: 6,
+				dislikes: 1
+			},
+
+		]);
+
+		console.log('Current suggestions: ', Suggestion);
 
 		try {
 			const { data: suggestionList, errors, nextToken } = await client.models.Suggestion.list();
@@ -52,7 +75,11 @@ function Leadboard() {
 			dislikes: 0
 		});
 
-		console.log('suggestion created: ', data);
+		console.log('Errors: ', errors);
+		console.log('Suggestion Object: ', data);
+		console.log('Suggestion Owner: ', data?.owner);
+		console.log('Suggestion Id: ', data?.id);
+		console.log('Suggestion Message: ', data?.text);
 	}
 
 	const posts = [];

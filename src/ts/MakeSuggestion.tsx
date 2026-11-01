@@ -7,7 +7,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import profanity from 'allprofanity';
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb";
+import { DynamoDBDocumentClient, GetCommand, PutCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 import { fromIni, fromCognitoIdentityPool } from "@aws-sdk/credential-providers";
 import { getCurrentUser } from 'aws-amplify/auth';
 // const client = generateClient<Schema>();
@@ -36,6 +36,7 @@ function MakeSuggestion() {
     }
 
     async function addSuggestion() {
+        // Check if the text contains profanity.
         if (await profanityCheck()) {
             setError("No profanity allowed :)");
         }
@@ -43,23 +44,44 @@ function MakeSuggestion() {
             setError("");
             console.log("Adding new suggestion: " + text);
 
+            // Get the user's id
             const { userId } = await getCurrentUser();
 
-            // console.log(userId);
+            // Get the user item from the Users table 
+            const user = await docClient.send(
+                new GetCommand({
+                    TableName: "Users",
+                    Key: {
+                        userId: userId,
+                    }
+                })
+            );
 
+            // Add a new item to the Suggestions table.
             await docClient.send(
                 new PutCommand({
                     TableName: "Suggestions",
                     Item: {
-                        userId: userId,                             // Partition Key
-                        timestamp: new Date().toISOString(),        // Sort Key
-                        suggestionId: "SUGGESTION_",
-                        pseudonym: "INSERT USER PSEUDONYM HERE",    
+                        userId: userId,                                         // Partition Key
+                        suggestionId: `SUGGESTION_${new Date().toISOString()}`, // Sort Key
+                        pseudonym: user.Item?.pseudonym,    
                         text: text,
                         likes: 0,
-                        comments: 0,
-                        
+                        comments: 0
                     }
+                })
+            );
+
+            // Set the hasSuggestion flag for this user to true
+            await docClient.send(
+                new UpdateCommand({
+                  TableName: "Users",
+                  Key: {
+                    userId: userId
+                  },
+                  UpdateExpression: "SET #hasSuggestion = :hasSuggestion",
+                  ExpressionAttributeNames: { "#hasSuggestion": "hasSuggestion" },
+                  ExpressionAttributeValues: { ":hasSuggestion": true } 
                 })
             );
         }
