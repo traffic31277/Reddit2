@@ -20,6 +20,8 @@ import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { marshall } from '@aws-sdk/util-dynamodb'
 import { getPositionOfLineAndCharacter } from 'typescript';
 
+
+// object for each individual post
 const Post = ({ username, content, comment_count = 0, like_count, order_id } = { username: '', content: '', comment_count: '', like_count: '', order_id: '' }) => {
   // fill in with comments from aws (comment objects)
   let user = username
@@ -34,19 +36,23 @@ const Post = ({ username, content, comment_count = 0, like_count, order_id } = {
       <p className='post_content'>{text} -- {id}</p>
       <div className='comments_background'>
         <p><b>comments</b></p>
-        <h2 id={likes}>{likes}</h2>
+        <h2 id={likes}></h2>
       </div>
     </div>
   )
 };
 
+// object for leaderboard page
 function Leaderboard() {
   let [posts, setPosts] = useState<any[]>();
   let [resorted, setResorted] = useState(0);
 
-  // This is the function that generates the list of posts,
+  // This is the function that generates the list of posts, it will run everytime the page loads.
   useEffect(() => {
     async function getPosts() {
+
+      // client for accessing Suggestions table with cognito identity pool 
+      // that has read access to the table. 
       const client = new DynamoDBClient(
         {
           region: "us-east-2",
@@ -54,19 +60,25 @@ function Leaderboard() {
             identityPoolId: 'us-east-2:12e12612-5d7f-4e29-b566-432accd9bcca',
           }),
         });
+      
+      
+      // pull every post, might add pagation if number of posts gets excessive.
       const docClient = DynamoDBDocumentClient.from(client);
       const params = {
         Statement: `SELECT * FROM Suggestions`,
       };
-
+    
       try {
         const data = await docClient.send(new ExecuteStatementCommand(params));
         console.log("Items retrieved successfully");
 
+        // grab array of items from api response
         let post_list = data.Items
         let posts_temp = []
         // add try/except for that
 
+        // for each post in the list, push corresponding information
+        // to the posts object. 
         for (let i = 0; i < post_list.length; i++) {
           let post = JSON.parse(JSON.stringify(post_list[i]))
 
@@ -91,18 +103,19 @@ function Leaderboard() {
     getPosts();
   }, []);
 
-  // updates listing
+  // updates listing when 'resorted' variable updates
   useEffect(() => {
     console.log(posts)
   }, [resorted]);
 
+  // resorts current list of posts by like count.
   function sort_likes() {
     console.log("sorted by likes")
     let temp_posts = posts
     let min = 0
     let n = temp_posts.length - 1
 
-    // seletion sort
+    // basic seletion sort
     for (let i = 0; i < n; i++) {
       min = i
       for (let j = i + 1; j <= n; j++) {
@@ -116,10 +129,12 @@ function Leaderboard() {
       temp_posts[min] = temp;
     };
 
+    // update Posts and then re-render by calling resorted UseEffect function with resorted update. 
     setPosts(temp_posts);
     setResorted(resorted + 1);
   };
 
+  // resorts current list of posts by recency.
   function sort_recency() {
     console.log("sorted by recency")
     let temp_posts = posts
@@ -140,7 +155,8 @@ function Leaderboard() {
       temp_posts[max] = temp;
 
     }
-
+    
+    // update Posts and then re-render by calling resorted UseEffect function with resorted update. 
     setPosts(temp_posts);
     setResorted(resorted + 1);
 

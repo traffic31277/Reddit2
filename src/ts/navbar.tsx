@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import ReactDOM from "react-dom/client";
 import '../css/navbar.css';
 
-// just one button
+// object for one button
 function NavigationButton ({label, destination}: {label:String; destination:String}) {
   return (
     <a href={destination} className='navButton'>
@@ -13,6 +13,7 @@ function NavigationButton ({label, destination}: {label:String; destination:Stri
   );
 };
 
+// full bar
 function NavigationBar () {
     return (
       <div className='navbar'>
