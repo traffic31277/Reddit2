@@ -1,3 +1,8 @@
+/*
+Code Review by lily 11/2/26
+Removed navbar, unnecessary for this page. cleaned up login page visuals
+*/
+
 import { useState } from 'react';
 import React from 'react';
 import { Authenticator } from '@aws-amplify/ui-react';
@@ -143,32 +148,35 @@ export default function Login() {
 	return (
 		<div className="login-page"> 
 			<div className="login-card">
-			<h1>Login</h1>
+				<h1>Login</h1>
 
-			<label htmlFor="username">Username</label>
-			<input 
-				id="username" 
-				type="text" 
-				value={username}
-				onChange={(e) => setUsername(e.target.value)}
-			/>
+				<span className='login-input'>
+					<label htmlFor="username">Username</label>
+					<input 
+						id="username" 
+						type="text" 
+						value={username}
+						onChange={(e) => setUsername(e.target.value)}
+					/>
+				</span>
+				<div className='spacer'></div>
+				<span className='login-input'>
+					<label htmlFor="password">Password</label>
+					<input 
+						id="password" 
+						type="password" 
+						value={password}
+						onChange={(e) => setPassword(e.target.value)}
+					/>
+				</span>
+				<div className='spacer'></div>
 
-			<label htmlFor="password">Password</label>
-			<input 
-				id="password" 
-				type="password" 
-				value={password}
-				onChange={(e) => setPassword(e.target.value)}
-			/>
+				{error && <div className="error-message" style={{ color: 'red', margin: '10px 0', fontSize: '14px' }}>{error}</div>}
 
-			
-			{error && <div className="error-message" style={{ color: 'red', margin: '10px 0', fontSize: '14px' }}>{error}</div>}
-
-			<button type="button" onClick={handleLogin} disabled={loading}>
-				{loading ? 'Logging in...' : 'Login'}
-			</button>
+				<button type="button" onClick={handleLogin} disabled={loading}>
+					{loading ? 'Logging in...' : 'Login'}
+				</button>
 			</div>
-			<NavigationBar />
 		</div>
 	);
 }

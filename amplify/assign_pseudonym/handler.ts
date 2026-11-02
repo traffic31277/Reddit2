@@ -1,3 +1,7 @@
+/*
+Code reviewed by lily 11/2/26
+*/
+
 import type { Handler } from 'aws-lambda';
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, GetCommand, PutCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
