@@ -2,7 +2,8 @@ import { defineFunction } from "@aws-amplify/backend"
 
 export const weeklyReset = defineFunction({
   name: "weekly-reset",
-  timeoutSeconds: 30,
-  schedule: "2 1 ? * 1 *", // Every sunday at 21:00 (9pm)
+  timeoutSeconds: 60,
+  schedule: "0 3 ? * 2 *", // Every Monday at 3:00 am in UTC (AKA Sunday at 9pm CST)
   // schedule: "every 1m"
+  // schedule: "39 17 ? * 2 *"
 });
