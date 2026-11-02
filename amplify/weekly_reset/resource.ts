@@ -5,5 +5,5 @@ export const weeklyReset = defineFunction({
   timeoutSeconds: 60,
   // schedule: "0 21 ? * 1 *", // Every sunday at 21:00 (9pm)
   // schedule: "every 1m"
-  schedule: "22 11 ? * 2 *"
+  schedule: "31 11 ? * 2 *"
 });
