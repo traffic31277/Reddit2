@@ -29,10 +29,6 @@ const Post = ({username, content, comment_count=0}={username:'', content:'', com
 	)
 };
 
-<<<<<<< HEAD
-function Leaderboard() {
-  let [posts, setPosts] = useState<any[]>();
-=======
 function Leadboard() {
 	const [error, setError] = useState('');
 
@@ -119,7 +115,6 @@ function Leadboard() {
 		}
 	};
 	genPosts();
->>>>>>> d87e9008fd42d347477587dd3dfb6ab953fcb78c
   
   // This is the function that generates the list of posts,
   useEffect(() => {
