@@ -20,7 +20,7 @@ function NavigationBar () {
         <ul>
           <li><NavigationButton label='Home' destination='/mail'/></li>
           <li><NavigationButton label='Weekly Leaderboard' destination='/leaderboard'/></li>
-          <li><NavigationButton label='Archive' destination='/'/></li>
+          <li><NavigationButton label='Archive' destination='/archive'/></li>
         </ul>
       </div>
     );

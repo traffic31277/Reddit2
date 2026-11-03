@@ -6,6 +6,7 @@
     border-radius: 20px;
     background-color: beige;
     color: black;
+    display: inline;
     font-weight: bold;
   }
 

@@ -1,5 +1,7 @@
 .navbar {
   margin:auto;
+  margin-left: 10vw;
+  width: 75vw;
 }
 
 .navbar li{ 
@@ -7,9 +9,8 @@
     border: solid 5px white;
     background-color: darkcyan;
     list-style-type: none;
-    width: 20vw;
     height: 75px;
-    margin: auto;
+    width: 33%;
     text-decoration: none;
     overflow: auto;
 }

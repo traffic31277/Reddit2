@@ -93,7 +93,6 @@ export default function Login() {
 				{loading ? 'Logging in...' : 'Login'}
 			</button>
 			</div>
-			<NavigationBar />
 		</div>
 	);
 }
