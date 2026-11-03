@@ -11,7 +11,8 @@ import { fromCognitoIdentityPool } from "@aws-sdk/credential-providers";
 
 
 function Mailbox() {
-	const [allowSubmit, setAllowSubmit] = useState(true);
+	const [allowSubmit, setAllowSubmit] = useState(false);
+	// const [loading, setLoading] = useState(true);
 
 	const checkUserHasSuggestion = async () => {
 		console.log("hello");
@@ -37,6 +38,7 @@ function Mailbox() {
 			console.log(user.Item?.pseudonym);
 			console.log(user.Item?.hasSuggestion);
 			setAllowSubmit(!user.Item?.hasSuggestion);
+
 		}
 		catch (error) {
 			console.error(`Failed to check if user has suggestion: ${error}`)

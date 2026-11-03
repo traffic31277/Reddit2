@@ -89,13 +89,6 @@ export default function Signup() {
         navigate('/reset');
     }
 
-    // Sends the user to the login page
-    const handleLogin = async () => {
-        console.log('Sending user to login page!');
-        navigate('/login')
-    }
-
-
     return (
         <div className="signup-page">
             <div className="signup-card">
