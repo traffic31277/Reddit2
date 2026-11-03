@@ -39,6 +39,12 @@ const suggestions = dynamodb.Table.fromTableName(
   "Suggestions"
 )
 
+const topSuggestions = dynamodb.Table.fromTableName(
+  stack,
+  "ExternalTopSuggestionsTable",
+  "TopSuggestions"
+)
+
 // Reference the Lambda functions
 const weeklyResetLambda = backend.weeklyReset.resources.lambda;
 const assignPseudonymLambda = backend.assignPseudonym.resources.lambda;
@@ -66,5 +72,9 @@ users.grantReadWriteData(
 
 users.grantReadWriteData(
   assignPseudonymLambda
+);
+
+topSuggestions.grantReadWriteData(
+  weeklyResetLambda
 );
 
