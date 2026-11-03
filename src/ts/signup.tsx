@@ -128,10 +128,6 @@ export default function Signup() {
                     <b>{loading ? 'Logging In...' : 'Log In'}</b>
                 </button>
 
-                <button type="button" onClick={handleLogin} disabled={loading}>
-                    {loading ? 'Signing Out...' : 'Log In'}
-                </button>
-
                 <button type="button" onClick={handleResetPassword} disabled={loading}>
                     <b>{loading ? 'Resetting Passsword...' : 'Reset Password'}</b>
                 </button>

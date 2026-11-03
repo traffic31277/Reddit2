@@ -35,8 +35,8 @@ function Mailbox() {
 					}
 				})
 			);
-			console.log(user.Item?.pseudonym);
-			console.log(user.Item?.hasSuggestion);
+			console.log("Pseudonym: ", user.Item?.pseudonym);
+			console.log("hasSuggestion flag: ", user.Item?.hasSuggestion);
 			setAllowSubmit(!user.Item?.hasSuggestion);
 
 		}
@@ -47,27 +47,9 @@ function Mailbox() {
 	checkUserHasSuggestion();
 
 	const navigate = useNavigate();
-
 	const handleNavigation = () => {
 		navigate('/suggest');
 	};
-
-	// Runs at startup, checks for current user session information
-	const checkUserAuth = async () => {
-		try {
-			const { username, userId, signInDetails } = await getCurrentUser();
-
-			console.log('User found!');
-			console.log('Username: ', username);
-			console.log('UserId: ', userId);
-			console.log('Sign-In Details: ', signInDetails);
-		}
-
-		catch (err: any) {
-			console.log('User not found!');
-		}
-	}
-	// checkUserAuth();
 
 	return (
 		<div className="suggestion-container">

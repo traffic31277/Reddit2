@@ -33,7 +33,7 @@ const Post = ({ username, content, comment_count = 0, like_count, order_id } = {
   return (
     <div className='post_background' id={id}>
       <h2 className='post_username'>{user}</h2>
-      <p className='post_content'>{text} -- {id}</p>
+      <p className='post_content'>{text}</p>
       <div className='comments_background'>
         <p><b>comments</b></p>
         <h2 id={likes}></h2>
@@ -167,12 +167,14 @@ function Leaderboard() {
       <div>
         <h1 className='heading'>Weekly Leaderboard</h1>
       </div>
+
       <div>
-        <NavigationBar />
         <button className='sort_button' onClick={sort_likes}>LIKES</button>
         <button className='sort_button' onClick={sort_recency}>NEWEST</button>
       </div>
       <div>{posts}</div>
+
+      <NavigationBar />
     </>
   )
 }
