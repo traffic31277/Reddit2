@@ -1,3 +1,6 @@
+/*
+Code Review by lily 11/2/26
+*/
 import "../css/MakeSuggestion.css";
 // import type { Schema } from '../../amplify/data/resource';
 // import { generateClient } from 'aws-amplify/data';

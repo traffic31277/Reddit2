@@ -1,3 +1,7 @@
+/*
+Code reviewed by lily 11/2/26
+*/
+
 import { type Schema } from '../data/resource';
 import { Amplify } from 'aws-amplify';
 import { generateClient } from 'aws-amplify/data';

@@ -22,18 +22,26 @@
     margin-top: 10px; 
     border-radius: 5px;
     padding-bottom: 200px;
-}
-
-.post_content {
-    margin-left:3vw;
-    margin-right: 3wv;
-    margin-bottom: 1vh;
-    color: black;
-    max-height: 15vh;
-    overflow-y: scroll;    
+    display: block;
 }
 
 ::-webkit-scrollbar {
     width: 0px;
     background: transparent; /* make scrollbar transparent */
+}
+
+.login-input {
+    margin:auto;
+    padding: 20px;
+    width: 30vw;
+    height: 10vw;
+}
+
+.login-input label {
+    color: white;
+    margin: 20px;
+}
+
+.spacer {
+    height: 20px;
 }
