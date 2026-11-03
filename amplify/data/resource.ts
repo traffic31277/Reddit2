@@ -1,6 +1,7 @@
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
 import { weeklyReset } from '../weekly_reset/resource';
 
+/*
 const schema = a.schema({
   UsedPseudonyms: a.model({
     id: a.id().required(),
@@ -16,8 +17,6 @@ const schema = a.schema({
   }),
 }).authorization((allow) => [
   // allow.owner(),
-  allow.publicApiKey(),
-  allow.resource(weeklyReset),
 ]);
 
 export type Schema = ClientSchema<typeof schema>;
@@ -28,3 +27,4 @@ export const data = defineData({
     defaultAuthorizationMode: 'userPool',
   },
 });
+*/

@@ -7,7 +7,6 @@ import { weeklyReset } from './weekly_reset/resource'
 
 const backend = defineBackend({
   auth,
-  data,
   weeklyReset,
 });
 
