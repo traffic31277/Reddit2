@@ -159,7 +159,7 @@ function Archive() {
   return (
     <>
       <div>
-        <h1 className='heading'>Weekly Leaderboard</h1>
+        <h1 className='heading'>Top Suggestions Archive</h1>
       </div>
       <div>
         <NavigationBar />
