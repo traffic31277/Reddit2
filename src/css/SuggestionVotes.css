@@ -1,0 +1,114 @@
+/* Compact voting strip on the right of the beige suggestion card. */
+.post_main_row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 54px;
+    gap: 4px;
+    align-items: start;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.post_text_column {
+    min-width: 0;
+}
+
+.post_vote_column {
+    width: 54px;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 9px 8px 4px 0;
+}
+
+.suggestion_votes {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    width: 100%;
+    text-align: center;
+}
+
+.suggestion_votes .suggestion_vote_button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 42px;
+    height: 39px;
+    min-width: 0;
+    min-height: 0;
+    padding: 2px;
+    border: none;
+    border-radius: 9px;
+    background: transparent;
+    color: cadetblue;
+    box-shadow: none;
+    cursor: pointer;
+}
+
+.suggestion_votes .suggestion_vote_button svg {
+    width: 35px;
+    height: 35px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.suggestion_votes .suggestion_vote_button:hover:not(:disabled) {
+    background-color: #d8ecee;
+    color: darkcyan;
+}
+
+.suggestion_votes .suggestion_vote_button[aria-pressed='true'] {
+    background-color: cadetblue;
+    color: white;
+}
+
+.suggestion_votes .suggestion_vote_button:disabled {
+    cursor: default;
+    opacity: 0.8;
+}
+
+.suggestion_vote_score {
+    color: black;
+    font-size: 21px;
+    font-weight: bold;
+    line-height: 26px;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Keep an AWS warning subtle and inside the compact strip. */
+.suggestion_vote_error_marker {
+    position: absolute;
+    top: 0;
+    right: -3px;
+    display: grid;
+    place-items: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #f5f4dd;
+    border: 1px solid cadetblue;
+    color: #31555a;
+    font-size: 11px;
+    font-weight: bold;
+    cursor: help;
+}
+
+.suggestion_vote_saving {
+    font-size: 10px;
+    color: #31555a;
+}
+
+@media (max-width: 600px) {
+    .post_main_row {
+        grid-template-columns: minmax(0, 1fr) 50px;
+    }
+
+    .post_vote_column {
+        width: 50px;
+        padding-right: 6px;
+    }
+}

@@ -1,0 +1,159 @@
+.leaderboard-page-container {
+  overflow-y: auto;
+  padding-bottom: 100px;
+}
+
+.leaderboard-main {
+  width: 100%;
+  max-width: 600px;
+  padding: 20px;
+  margin: 0 auto;
+}
+
+.leaderboard-title {
+  color: #b85c5c;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.no-suggestions-text {
+  text-align: center;
+  color: #666;
+}
+
+.suggestion-card-item {
+  background-color: #fffbe8;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f0e6b2;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.suggestion-card-content-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.suggestion-text-block {
+  flex: 1;
+  padding-right: 15px;
+}
+
+.suggestion-author-heading {
+  color: #b85c5c;
+  margin: 0 0 8px 0;
+  font-size: 20px;
+}
+
+.suggestion-body-text {
+  font-size: 18px;
+  color: #111;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.vote-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 40px;
+}
+
+.vote-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  padding: 0;
+  line-height: 1;
+}
+
+.upvote-btn {
+  color: #2ecc71;
+}
+
+.downvote-btn {
+  color: #e74c3c;
+}
+
+.net-score-display {
+  font-weight: bold;
+  font-size: 18px;
+  margin: 2px 0;
+  color: #333;
+}
+
+.comments-section-wrapper {
+  margin-top: 15px;
+  border-top: 1px solid #f1e4a8;
+  padding-top: 10px;
+}
+
+.comments-toggle-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0;
+}
+
+.comments-drawer {
+  margin-top: 12px;
+}
+
+.no-comments-text {
+  font-size: 14px;
+  color: #666;
+  font-style: italic;
+}
+
+.comment-bubble {
+  margin-bottom: 10px;
+  background: #fcf8e3;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.comment-author-heading {
+  color: #b85c5c;
+  font-weight: bold;
+  font-size: 13px;
+}
+
+.comment-body-text {
+  font-size: 14px;
+  color: #222;
+}
+
+.add-comment-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.comment-input-field {
+  flex: 1;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.comment-post-btn {
+  padding: 8px 14px;
+  background-color: #b85c5c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}

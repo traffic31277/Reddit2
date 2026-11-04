@@ -8,7 +8,7 @@ import { useState } from 'react';
 import NavigationBar from "./navbar";
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import profanity from 'allprofanity';
+//import profanity from 'allprofanity';
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, GetCommand, PutCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 import { fromIni, fromCognitoIdentityPool } from "@aws-sdk/credential-providers";

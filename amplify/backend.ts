@@ -39,6 +39,48 @@ const suggestions = dynamodb.Table.fromTableName(
   "Suggestions"
 )
 
+const topSuggestions = dynamodb.Table.fromTableName(
+  stack,
+  "ExternalTopSuggestionsTable",
+  "TopSuggestions"
+)
+
+const comments = new dynamodb.Table(
+  stack,
+  "CommentsTable",
+  {
+    tableName: "Comments",
+    partitionKey: {
+      name: "suggestionId",
+      type: dynamodb.AttributeType.STRING,
+    },
+    sortKey: {
+      name: "commentId",
+      type: dynamodb.AttributeType.STRING,
+    },
+    billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+  }
+);
+
+// Store one vote per signed-in user for each suggestion.
+// These votes are separate from the Comments table.
+const suggestionVotes = new dynamodb.Table(
+  stack,
+  "SuggestionVotesTable",
+  {
+    tableName: "SuggestionVotes",
+    partitionKey: {
+      name: "suggestionId",
+      type: dynamodb.AttributeType.STRING,
+    },
+    sortKey: {
+      name: "userId",
+      type: dynamodb.AttributeType.STRING,
+    },
+    billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+  }
+);
+
 // Reference the Lambda functions
 const weeklyResetLambda = backend.weeklyReset.resources.lambda;
 const assignPseudonymLambda = backend.assignPseudonym.resources.lambda;
@@ -68,3 +110,25 @@ users.grantReadWriteData(
   assignPseudonymLambda
 );
 
+
+topSuggestions.grantReadWriteData(
+  weeklyResetLambda
+);
+
+const authenticatedUserRole = backend.auth.resources.authenticatedUserIamRole;
+
+comments.grantReadWriteData(
+  authenticatedUserRole
+);
+
+users.grantReadData(
+  authenticatedUserRole
+);
+
+suggestions.grantReadWriteData(
+  authenticatedUserRole
+);
+
+suggestionVotes.grantReadWriteData(
+  authenticatedUserRole
+);

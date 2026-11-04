@@ -9,7 +9,7 @@ import Mailbox from './mailbox.tsx';
 import Leaderboard from './leaderboard.tsx';
 import Reset from './reset.tsx';
 import ResetPassword from './resetPassword.tsx';
-
+import SuggestionVotes from './SuggestionVotes.tsx';
 import '@aws-amplify/ui-react/styles.css';
 import '../css/index.css';
 
@@ -18,6 +18,7 @@ import {
     Routes, Route,
     Link
 } from 'react-router-dom';
+
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -31,6 +32,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route path='/mail' element={<Mailbox/>}/> 
           <Route path='/leaderboard' element={<Leaderboard/>}/>
           <Route path='/suggest' element={<MakeSuggestion/>}/>
+          <Route path='/votes' element={<SuggestionVotes/>}/>
         </Routes>
       </Router>
   </React.StrictMode>
