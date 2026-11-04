@@ -2,7 +2,6 @@ import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
 import { weeklyReset } from '../weekly_reset/resource';
 import { assignPseudonym } from '../assign_pseudonym/resource';
 
-
 const schema = a.schema({
   assignPseudonym: a
     .query()

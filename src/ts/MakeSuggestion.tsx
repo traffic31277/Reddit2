@@ -91,7 +91,6 @@ function MakeSuggestion() {
                 })
             );
 
-
             navigate('/mail');
         }
     }
