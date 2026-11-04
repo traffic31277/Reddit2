@@ -24,8 +24,12 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+
     gap: 0;
-    width: 100%;
+    width: 42px;
+    max-width: 100%;
+
+    margin: 0 auto;
     text-align: center;
 }
 
@@ -71,12 +75,27 @@
     opacity: 0.8;
 }
 
-.suggestion_vote_score {
-    color: black;
-    font-size: 21px;
+.suggestion_votes > .suggestion_vote_score {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 42px;
+    min-width: 42px;
+    max-width: 42px;
+    height: 32px;
+
+    flex: 0 0 32px;
+    align-self: center;
+    box-sizing: border-box;
+
+    color: #31555a;
+    font-size: 20px;
     font-weight: bold;
-    line-height: 26px;
-    font-variant-numeric: tabular-nums;
+    line-height: 1;
+
+    opacity: 1;
+    visibility: visible;
 }
 
 /* Keep an AWS warning subtle and inside the compact strip. */
