@@ -9,7 +9,7 @@ import NavigationBar from "./navbar";
 import { useNavigate } from 'react-router-dom';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import profanity from 'allprofanity';
+//import profanity from 'allprofanity';
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, GetCommand, PutCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 import { fromCognitoIdentityPool } from "@aws-sdk/credential-providers";

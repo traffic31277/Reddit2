@@ -87,8 +87,6 @@ export default function Verification() {
                     {loading ? 'Resending Code...' : 'Resend Code'}
                 </button>
             </div>
-
-            <NavigationBar />
         </div>
     );
 }

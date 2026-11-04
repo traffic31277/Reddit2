@@ -9,8 +9,8 @@ import Mailbox from './mailbox.tsx';
 import Leaderboard from './leaderboard.tsx';
 import Reset from './reset.tsx';
 import ResetPassword from './resetPassword.tsx';
-import Archive from './archive.tsx';
-
+import SuggestionVotes from './SuggestionVotes.tsx';
+import Archive from './archive.tsx'
 import '@aws-amplify/ui-react/styles.css';
 import '../css/index.css';
 
@@ -19,6 +19,7 @@ import {
     Routes, Route,
     Link
 } from 'react-router-dom';
+
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -32,7 +33,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route path='/mail' element={<Mailbox/>}/> 
           <Route path='/leaderboard' element={<Leaderboard/>}/>
           <Route path='/suggest' element={<MakeSuggestion/>}/>
-          <Route path='/archive' element={<Archive/>}></Route>
+          <Route path='/archive' element={<Archive/>}/>
         </Routes>
       </Router>
   </React.StrictMode>
