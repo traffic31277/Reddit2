@@ -2,97 +2,133 @@ import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { fromCognitoIdentityPool } from '@aws-sdk/credential-providers';
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 import { Amplify } from 'aws-amplify';
-import { fetchAuthSession } from 'aws-amplify/auth';
+import { fetchAuthSession, getCurrentUser } from 'aws-amplify/auth';
 
 const REGION = 'us-east-2';
 
-// Existing identity pool used by the project's working Suggestions/Users code.
-// Prefer the identity pool in Amplify's config when one is configured.
-const EXISTING_IDENTITY_POOL_ID = 'us-east-2:12e12612-5d7f-4e29-b566-432accd9bcca';
-
-/**
- * Create a signed-in DynamoDB client for both comments and suggestion votes.
- *
- * Some builds have a valid Cognito User Pool sign-in but no AWS credentials
- * in fetchAuthSession(). In that case, exchange the user's ID token through
- * the same Cognito Identity Pool already used elsewhere in this project.
- */
-export async function getDocumentClient() {
-    const session = await fetchAuthSession();
-
-    // Amplify might already be providing the correct authenticated IAM role.
-    if (session.credentials) {
-        return DynamoDBDocumentClient.from(new DynamoDBClient({
-            region: REGION,
-            credentials: session.credentials,
-        }));
-    }
-
-    const idToken = session.tokens?.idToken?.toString();
-    const cognitoConfig = Amplify.getConfig().Auth?.Cognito;
-    const userPoolId = cognitoConfig?.userPoolId;
-
-    if (!idToken) {
-        throw new Error('You are not signed in. Please log in and try again.');
-    }
-
-    if (!userPoolId) {
-        throw new Error('Cognito User Pool is missing from Amplify configuration.');
-    }
-
-    const identityPoolId = cognitoConfig?.identityPoolId ?? EXISTING_IDENTITY_POOL_ID;
-    const providerName = `cognito-idp.${REGION}.amazonaws.com/${userPoolId}`;
-
-    // Passing `logins` is essential: without it, Cognito Identity may return
-    // guest/unauthenticated credentials that cannot access protected tables.
-    const credentials = fromCognitoIdentityPool({
-        clientConfig: { region: REGION },
-        identityPoolId,
-        logins: {
-            [providerName]: idToken,
-        },
-    });
-
-    return DynamoDBDocumentClient.from(new DynamoDBClient({
-        region: REGION,
-        credentials,
-    }));
+function appError(name: string, message: string) {
+    return Object.assign(new Error(message), { name });
 }
 
+/**
+ * Return the signed-in user and a DynamoDB client belonging to that user.
+ *
+ * Do not fall back to guest credentials for writes. A guest identity may be
+ * able to read Suggestions, but it must not be allowed to vote or comment.
+ */
+export async function getSignedInDynamo() {
+    const cognito = Amplify.getConfig().Auth?.Cognito;
+
+    if (!cognito?.userPoolId || !cognito.userPoolClientId) {
+        throw appError(
+            'MissingUserPoolConfiguration',
+            'Cognito User Pool settings are missing from amplify_outputs.json.',
+        );
+    }
+
+    if (!cognito.identityPoolId) {
+        throw appError(
+            'MissingIdentityPoolConfiguration',
+            'The configured backend is missing its Cognito Identity Pool.',
+        );
+    }
+
+    // Checking the user explicitly prevents guest credentials from being used
+    // accidentally for voting or posting a comment.
+    const { userId } = await getCurrentUser();
+    const session = await fetchAuthSession();
+    const idToken = session.tokens?.idToken?.toString();
+
+    if (!idToken) {
+        throw appError('NotSignedIn', 'The current browser session has no sign-in token.');
+    }
+
+    // Only use the configured backend's Identity Pool. Falling back to a hardcoded
+    // pool can select a different IAM role from the one granted table access.
+    const credentials =
+        session.credentials ??
+        fromCognitoIdentityPool({
+            clientConfig: { region: cognito.identityPoolId.split(':')[0] },
+            identityPoolId: cognito.identityPoolId,
+            logins: {
+                [`cognito-idp.${cognito.userPoolId.split('_')[0]}.amazonaws.com/${cognito.userPoolId}`]:
+                    idToken,
+            },
+        });
+
+    const client = DynamoDBDocumentClient.from(
+        new DynamoDBClient({
+            region: "us-east-2",
+            credentials: fromCognitoIdentityPool({
+                identityPoolId: 'us-east-2:12e12612-5d7f-4e29-b566-432accd9bcca'
+            })
+        })
+    );
+    
+    return { userId, client };
+}
+
+/** Translate AWS SDK exceptions into useful, user-facing diagnostics. */
 export function describeDatabaseError(error: unknown, tableName: string) {
     const details = error as {
         name?: string;
         message?: string;
         $metadata?: { httpStatusCode?: number };
-    };
+    } | null;
     const code = details?.name ?? '';
     const message = details?.message ?? '';
-    const lowerMessage = message.toLowerCase();
+    const lower = message.toLowerCase();
+
+    if (code === 'MissingIdentityPoolConfiguration') {
+        return 'The app is missing its Identity Pool configuration. Regenerate amplify_outputs.json from the deployed backend.';
+    }
+
+    if (
+        code === 'AuthUserPoolException' ||
+        code === 'MissingUserPoolConfiguration' ||
+        lower.includes('userpool not configured') ||
+        lower.includes('user pool settings are missing')
+    ) {
+        return 'Cognito User Pool is not configured. Check amplify_outputs.json and the Amplify setup in main.tsx.';
+    }
+
+    if (
+        code === 'UserUnAuthenticatedException' ||
+        code === 'NotSignedIn' ||
+        lower.includes('not authenticated') ||
+        lower.includes('no sign-in token') ||
+        lower.includes('not signed in')
+    ) {
+        return 'Please log in to your account before commenting or voting.';
+    }
 
     if (code === 'ResourceNotFoundException' || code === 'TableNotFoundException') {
-        return `${tableName} table not found in ${REGION}. Check that the backend was deployed in the correct AWS account.`;
+        return `${tableName} was not found in ${REGION}. Deploy the backend that defines this table.`;
     }
 
-    if (code === 'AccessDeniedException' || details?.$metadata?.httpStatusCode === 403 ||
-        code === 'UnauthorizedException' || code === 'NotAuthorizedException') {
-        return `Access to ${tableName} denied. Check that your Cognito Identity Pool's authenticated role has permission.`;
+    if (
+        code === 'AccessDeniedException' ||
+        code === 'UnrecognizedClientException' ||
+        details?.$metadata?.httpStatusCode === 403
+    ) {
+        return `Access to ${tableName} was denied. Check the authenticated IAM role and the deployed table permissions.`;
     }
 
-    if (code === 'InvalidIdentityPoolConfigurationException') {
-        return 'Cognito Identity Pool configuration is invalid. Check the identity pool and its IAM roles.';
+    if (
+        code === 'NotAuthorizedException' ||
+        code === 'InvalidIdentityPoolConfigurationException' ||
+        (code === 'InvalidParameterException' && lower.includes('identity'))
+    ) {
+        return "The Cognito Identity Pool rejected this sign-in. Confirm that it trusts the app's User Pool and has an authenticated IAM role.";
     }
 
-    if (lowerMessage.includes('not signed in') || lowerMessage.includes('unauthenticated')) {
-        return 'You are not signed in. Please log in and try again.';
+    if (code === 'TransactionCanceledException' || code === 'ConditionalCheckFailedException') {
+        return 'Another vote or update happened at the same time. Refresh the leaderboard and try again.';
     }
 
-    if (lowerMessage.includes('user pool') || lowerMessage.includes('amplify configuration')) {
-        return 'Amplify Auth configuration is incomplete. Check amplify_outputs.json and Amplify.configure().';
+    if (code === 'CredentialsProviderError' || code.includes('Credentials')) {
+        return 'AWS credentials were unavailable. Check the identity pool configuration and the browser console.';
     }
 
-    if (lowerMessage.includes('credentials') || code.includes('Credentials')) {
-        return 'Could not get AWS credentials. Check the Cognito Identity Pool configuration and browser console.';
-    }
-
-    return `Could not access ${tableName}. See the browser console for the AWS error (${code || 'unknown error'}).`;
+    return `${tableName} request failed (${code || 'unknown error'}). See the browser console for details.`;
 }

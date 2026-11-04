@@ -1,23 +1,8 @@
-import { useState } from 'react';
-import {
-    GetCommand,
-    PutCommand,
-    QueryCommand,
-    UpdateCommand,
-} from '@aws-sdk/lib-dynamodb';
-import { getCurrentUser } from 'aws-amplify/auth';
+import { useRef, useState } from 'react';
 import profanity from 'allprofanity';
 import '../css/SuggestionComments.css';
-import { describeDatabaseError, getDocumentClient } from './dynamoSession';
-
-interface CommentItem {
-    suggestionId: string;
-    commentId: string;
-    userId: string;
-    pseudonym: string;
-    text: string;
-    createdAt: string;
-}
+import { describeDatabaseError, getSignedInDynamo } from './dynamoSession';
+import { createSuggestionStore, type CommentItem } from './suggestionStore';
 
 interface SuggestionCommentsProps {
     suggestionId: string;
@@ -37,151 +22,103 @@ function SuggestionComments({
     const [loading, setLoading] = useState(false);
     const [posting, setPosting] = useState(false);
     const [error, setError] = useState('');
+    const postingComment = useRef(false);
+    const loadNumber = useRef(0);
+    const pendingComment = useRef<{ commentId: string; text: string } | null>(null);
+    const key = { userId: suggestionUserId, suggestionId };
 
     async function loadComments() {
+        if (postingComment.current) {
+            return;
+        }
+        const thisLoad = ++loadNumber.current;
         setLoading(true);
         setError('');
 
         try {
-            const docClient = await getDocumentClient();
-            const loadedComments: CommentItem[] = [];
-            let lastEvaluatedKey: Record<string, unknown> | undefined;
-
-            do {
-                const response = await docClient.send(
-                    new QueryCommand({
-                        TableName: 'Comments',
-                        KeyConditionExpression: 'suggestionId = :suggestionId',
-                        ExpressionAttributeValues: {
-                            ':suggestionId': suggestionId,
-                        },
-                        ScanIndexForward: true,
-                        ExclusiveStartKey: lastEvaluatedKey,
-                    })
-                );
-
-                if (response.Items) {
-                    loadedComments.push(...(response.Items as CommentItem[]));
-                }
-
-                lastEvaluatedKey = response.LastEvaluatedKey;
-            } while (lastEvaluatedKey);
-
-            setComments(loadedComments);
-
-            // The table is the source of truth for the expanded comment count.
-            setCommentCount(loadedComments.length);
-        }
-        catch (err) {
-            console.error('Error loading comments:', err);
-            setError(describeDatabaseError(err, 'Comments'));
-        }
-        finally {
-            setLoading(false);
+            const { client } = await getSignedInDynamo();
+            const store = createSuggestionStore(client);
+            const loadedComments = await store.listComments(key);
+            if (thisLoad === loadNumber.current) {
+                setComments(loadedComments);
+                setCommentCount(loadedComments.length);
+            }
+        } catch (error) {
+            console.error('Could not load comments:', error);
+            if (thisLoad === loadNumber.current) {
+                setError(describeDatabaseError(error, 'Comments'));
+            }
+        } finally {
+            if (thisLoad === loadNumber.current) {
+                setLoading(false);
+            }
         }
     }
 
-    async function toggleComments() {
-        const openingComments = !expanded;
-        setExpanded(openingComments);
-
-        if (openingComments) {
-            await loadComments();
+    function toggleComments() {
+        setExpanded(!expanded);
+        if (!expanded) {
+            void loadComments();
         }
     }
 
     async function postComment() {
+        if (postingComment.current || loading) {
+            return;
+        }
         const cleanedText = text.trim();
-
-        if (cleanedText.length === 0) {
-            setError('Enter a comment before posting.');
+        if (!cleanedText || cleanedText.length > 1000) {
+            setError('Enter a comment with 1 to 1000 characters.');
             return;
         }
-
-        if (cleanedText.length > 1000) {
-            setError('Comments must be 1000 characters or less.');
-            return;
-        }
-
         if (profanity.check(cleanedText)) {
             setError('No profanity allowed :)');
             return;
         }
 
+        // Preserve this ID if a network failure requires resubmission.
+        if (pendingComment.current?.text !== cleanedText) {
+            pendingComment.current = {
+                commentId: 'COMMENT_' + new Date().toISOString(),
+                text: cleanedText,
+            };
+        }
+
+        postingComment.current = true;
         setPosting(true);
         setError('');
-
         try {
-            const { userId } = await getCurrentUser();
-            const docClient = await getDocumentClient();
-
-            // Read the user's pseudonym so comments stay anonymous like suggestions.
-            const user = await docClient.send(
-                new GetCommand({
-                    TableName: 'Users',
-                    Key: {
-                        userId: userId,
-                    },
-                })
+            const { userId, client } = await getSignedInDynamo();
+            const store = createSuggestionStore(client);
+            const comment = await store.saveComment(
+                key,
+                userId,
+                pendingComment.current.commentId,
+                cleanedText,
             );
-
-            const createdAt = new Date().toISOString();
-            const commentId = `COMMENT_${createdAt}`;
-            const pseudonym = String(user.Item?.pseudonym ?? 'Anonymous');
-
-            const newComment: CommentItem = {
-                suggestionId: suggestionId,
-                commentId: commentId,
-                userId: userId,
-                pseudonym: pseudonym,
-                text: cleanedText,
-                createdAt: createdAt,
-            };
-
-            // suggestionId is the partition key and commentId is the sort key.
-            await docClient.send(
-                new PutCommand({
-                    TableName: 'Comments',
-                    Item: {
-                        ...newComment,
-                        suggestionUserId: suggestionUserId,
-                    },
-                    ConditionExpression: 'attribute_not_exists(commentId)',
-                })
-            );
-
-            // Keep the parent suggestion's stored comment count up to date.
-            try {
-                await docClient.send(
-                    new UpdateCommand({
-                        TableName: 'Suggestions',
-                        Key: {
-                            userId: suggestionUserId,
-                            suggestionId: suggestionId,
-                        },
-                        UpdateExpression: 'ADD #comments :one',
-                        ExpressionAttributeNames: {
-                            '#comments': 'comments',
-                        },
-                        ExpressionAttributeValues: {
-                            ':one': 1,
-                        },
-                    })
+            setComments((current) => {
+                const otherComments = current.filter(
+                    (item) => item.commentId !== comment.commentId,
                 );
-            }
-            catch (countError) {
-                console.error('Comment saved, but comment count could not be updated:', countError);
-            }
-
-            setComments((currentComments) => [...currentComments, newComment]);
-            setCommentCount((currentCount) => currentCount + 1);
+                return [...otherComments, comment].sort((a, b) =>
+                    a.commentId.localeCompare(b.commentId),
+                );
+            });
+            setCommentCount((count) =>
+                comments.some((item) => item.commentId === comment.commentId) ? count : count + 1,
+            );
             setText('');
-        }
-        catch (err) {
-            console.error('Error posting comment:', err);
-            setError(describeDatabaseError(err, 'Comments'));
-        }
-        finally {
+            pendingComment.current = null;
+        } catch (error) {
+            console.error('Could not save comment:', error);
+            if ((error as Error).name === 'CommentIdConflict') {
+                pendingComment.current = null;
+                setError((error as Error).message);
+            } else {
+                setError(describeDatabaseError(error, 'Comments'));
+            }
+        } finally {
+            postingComment.current = false;
             setPosting(false);
         }
     }
@@ -192,53 +129,67 @@ function SuggestionComments({
                 className='comments_background'
                 type='button'
                 onClick={toggleComments}
+                aria-expanded={expanded}
+                disabled={posting}
             >
                 <b>comments ({commentCount})</b>
             </button>
 
             {expanded && (
                 <div className='comments_panel'>
-                    {loading && <p className='comments_status'>Loading comments...</p>}
-
+                    {loading && (
+                        <p className='comments_status' role='status'>
+                            Loading comments...
+                        </p>
+                    )}
                     {!loading && !error && comments.length === 0 && (
                         <p className='comments_status'>No comments yet.</p>
                     )}
-
-                    {!loading && comments.map((comment) => (
+                    {comments.map((comment) => (
                         <div className='comment_background' key={comment.commentId}>
                             <h3 className='comment_username'>{comment.pseudonym}</h3>
                             <p className='comment_content'>{comment.text}</p>
                         </div>
                     ))}
 
-                    <div className='comment_form'>
+                    <form
+                        className='comment_form'
+                        onSubmit={(event) => {
+                            event.preventDefault();
+                            void postComment();
+                        }}
+                    >
                         <textarea
                             className='comment_input'
                             value={text}
                             onChange={(event) => setText(event.target.value)}
+                            aria-label='Write a comment'
                             placeholder='Write a comment...'
                             maxLength={1000}
+                            disabled={posting}
                         />
-
                         <button
                             className='comment_button'
-                            type='button'
-                            onClick={postComment}
-                            disabled={posting}
+                            type='submit'
+                            disabled={posting || loading}
                         >
                             {posting ? 'Posting...' : 'Post Comment'}
                         </button>
-                    </div>
+                    </form>
 
                     {error && (
-                        <div className='comment_error' role='alert'>
-                            <p>{error}</p>
-                            <button className='comment_retry' type='button'
-                                onClick={() => void loadComments()} disabled={loading}>
-                                Retry loading comments
-                            </button>
-                        </div>
+                        <p className='comment_error' role='alert'>
+                            {error}
+                        </p>
                     )}
+                    <button
+                        className='comment_retry'
+                        type='button'
+                        onClick={() => void loadComments()}
+                        disabled={loading || posting}
+                    >
+                        Refresh comments
+                    </button>
                 </div>
             )}
         </div>
