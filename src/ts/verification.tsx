@@ -88,7 +88,6 @@ export default function Verification() {
                 </button>
             </div>
 
-            <NavigationBar />
         </div>
     );
 }
