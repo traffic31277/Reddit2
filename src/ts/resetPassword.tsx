@@ -80,8 +80,6 @@ export default function ResetPassword() {
                     {loading ? 'Resending Code...' : 'Resend Code'}
                 </button>
             </div>
-            
-            <NavigationBar />
         </div>
     );
 }

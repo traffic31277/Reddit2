@@ -47,8 +47,6 @@ export default function Reset() {
                     {loading ? 'Sending Reset Code...' : 'Send Reset Code'}
                 </button>
             </div>
-            
-            <NavigationBar />
         </div>
     );
 }

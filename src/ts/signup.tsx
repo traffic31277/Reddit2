@@ -94,42 +94,44 @@ export default function Signup() {
             <div className="signup-card">
                 <h1>Sign Up</h1>
 
-                <label htmlFor="email">Email</label>
-                <input
-                    id="username"
-                    type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                />
+                <span>
+                    <label htmlFor="email">Email</label>
+                    <input
+                        id="username"
+                        type="text"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                    />
+                </span>
 
-                <label htmlFor="email">Password</label>
-                <input
-                    id="password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                />
-
+                <span>
+                    <label htmlFor="email">Password</label>
+                    <input
+                        id="password"
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                </span>
+                
                 {error && <div className="error-message" style={{ color: 'red', margin: '10px 0', fontSize: '14px' }}>{error}</div>}
 
                 <button type="button" onClick={handleSignup} disabled={loading}>
-                    {loading ? 'Signing In...' : 'Sign Up'}
+                    <b>{loading ? 'Signing In...' : 'Sign Up'}</b>
                 </button>
 
                 <button type="button" onClick={handleSignOut} disabled={loading}>
-                    {loading ? 'Signing Out...' : 'Sign Out'}
+                    <b>{loading ? 'Signing Out...' : 'Sign Out'}</b>
                 </button>
 
                 <button type="button" onClick={handleLogin} disabled={loading}>
-                    {loading ? 'Signing Out...' : 'Log In'}
+                    <b>{loading ? 'Logging In...' : 'Log In'}</b>
                 </button>
 
                 <button type="button" onClick={handleResetPassword} disabled={loading}>
-                    {loading ? 'Resetting Passsword...' : 'Reset Password'}
+                    <b>{loading ? 'Resetting Passsword...' : 'Reset Password'}</b>
                 </button>
             </div>
-            
-            <NavigationBar />
-        </div>
+    </div>
     );
 }

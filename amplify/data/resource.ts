@@ -3,6 +3,7 @@ import { weeklyReset } from '../weekly_reset/resource';
 import { assignPseudonym } from '../assign_pseudonym/resource';
 import { suggestionOperations } from '../suggestion_interactions/schema';
 
+
 const schema = a.schema({
   ...suggestionOperations,
   assignPseudonym: a

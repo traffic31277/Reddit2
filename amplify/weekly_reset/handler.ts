@@ -7,7 +7,7 @@ import { Amplify } from 'aws-amplify';
 import { generateClient } from 'aws-amplify/data';
 import type { EventBridgeHandler } from 'aws-lambda';
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient, ScanCommand, DeleteCommand } from "@aws-sdk/lib-dynamodb";
+import { DynamoDBDocumentClient, ScanCommand, DeleteCommand, PutCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 import { getAmplifyDataClientConfig } from '@aws-amplify/backend/function/runtime';
 import { env } from "$amplify/env/weekly-reset";
 
@@ -19,9 +19,10 @@ const schemaClient = generateClient<Schema>();
 // Table Names as Strings
 const USED_PSEUDONYMS_TABLE_NAME = "UsedPseudonyms";
 const USERS_TABLE_NAME = "Users";
+const TOP_SUGGESTIONS_TABLE_NAME = "TopSuggestions";
 
 // Boilerplate needed to access the PseudonymPool Table
-const externalClient = DynamoDBDocumentClient.from( new DynamoDBClient({ region:"us-east-2" }));
+const externalClient = DynamoDBDocumentClient.from(new DynamoDBClient({ region: "us-east-2" }));
 
 
 
@@ -51,8 +52,21 @@ export const handler: EventBridgeHandler<"Scheduled Event", null, void> = async 
 
         // Assign a new pseudonym to this user
         const { data, errors } = await schemaClient.queries.assignPseudonym({
-							userId: user.userId,
+          userId: user.userId,
         });
+
+        // Reset the hasSuggestion flag for this user to false, allowing them to submit another suggestion
+        await externalClient.send(
+          new UpdateCommand({
+            TableName: "Users",
+            Key: {
+              userId: user.userId
+            },
+            UpdateExpression: "SET #hasSuggestion = :hasSuggestion",
+            ExpressionAttributeNames: { "#hasSuggestion": "hasSuggestion" },
+            ExpressionAttributeValues: { ":hasSuggestion": false }
+          })
+        );
 
         console.log(`Assigned Pseudonym ${data} to User ${user.userId}`);
       }
@@ -61,8 +75,21 @@ export const handler: EventBridgeHandler<"Scheduled Event", null, void> = async 
     } while (lastKey && Object.keys(lastKey).length > 0);
   }
   catch (error) {
-    console.error("Error During Pseudonym Reset: ", error);
+    console.error("Error During Weekly Reset: ", error);
   }
+
+  // await externalClient.send(
+  //   new PutCommand({
+  //     TableName: TOP_SUGGESTIONS_TABLE_NAME,
+  //     Item: {
+  //       suggestionId: "SUGGESTION_test_3",
+  //       pseudonym: "testPseudonym",
+  //       text: "test again again :)",
+  //       likes: 102,
+  //       comments: 23
+  //     }
+  //   })
+  // )
 
   console.log("Weekly Reset Complete");
 }

@@ -6,16 +6,19 @@ import "../css/MakeSuggestion.css";
 // import { generateClient } from 'aws-amplify/data';
 import { useState } from 'react';
 import NavigationBar from "./navbar";
+import { useNavigate } from 'react-router-dom';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 //import profanity from 'allprofanity';
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, GetCommand, PutCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
-import { fromIni, fromCognitoIdentityPool } from "@aws-sdk/credential-providers";
+import { fromCognitoIdentityPool } from "@aws-sdk/credential-providers";
 import { getCurrentUser } from 'aws-amplify/auth';
 // const client = generateClient<Schema>();
 
 function MakeSuggestion() {
+    const navigate = useNavigate();
+    
     const client = new DynamoDBClient(
         {
             region: "us-east-2",
@@ -87,6 +90,9 @@ function MakeSuggestion() {
                   ExpressionAttributeValues: { ":hasSuggestion": true } 
                 })
             );
+
+
+            navigate('/mail');
         }
     }
 

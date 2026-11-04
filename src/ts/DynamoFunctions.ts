@@ -20,7 +20,7 @@ import {
  * @param tableName - The name of the DynamoDB table
  * @returns The response from the ExecuteStatementCommand
  */
-export const selectAllItems = async (tableName: String) => {
+export const selectAllItems = async (tableName: String="Suggestion-kdkurq2ol5e2fcf73yfe5ta44e-NONE") => {
   const client = new DynamoDBClient({});
   const docClient = DynamoDBDocumentClient.from(client);
 
@@ -31,12 +31,14 @@ export const selectAllItems = async (tableName: String) => {
   try {
     const data = await docClient.send(new ExecuteStatementCommand(params));
     console.log("Items retrieved successfully");
-    return data;
+    return [data];
   } catch (err) {
     console.error("Error retrieving items:", err);
     throw err;
   }
 };
+
+console.log(await selectAllItems());
 
 /**
  * Select an item by its primary key using PartiQL.
@@ -223,21 +225,9 @@ export const selectExamples = async () => {
  
 export const pullPosts = async () => {
   const posts = [];
-  const table = "Suggestion-tn2p2qfkhrcbbd4x54e6zmjhmu-NONE";
+  const table = "Suggestion-kdkurq2ol5e2fcf73yfe5ta44e-NONE";
   let res = await selectAllItems(table);
-  try {
-    let num = res.Items.length;
-
-      for (let i = 0; i < num; i++) {
-        let user = res.Items[i].userId;
-        let cont = res.Items[i].text;
-        let likes = res.Items[i].likes;
-        posts.push([user, cont, likes]);
-      }
-
-      return posts;
-  } catch {
-    throw "Could not find posts"
-  }
-
+  console.log(res);
+  return res;
 }
+
