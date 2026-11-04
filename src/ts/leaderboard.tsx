@@ -35,7 +35,7 @@ const Post = ({ username, content, comment_count = 0, like_count, order_id } = {
       <h2 className='post_username'>{user}</h2>
       <p className='post_content'>{text}</p>
       <div className='comments_background'>
-        <p><b>comments</b></p>
+        <p><b>Likes {likes}</b></p>
         <h2 id={likes}></h2>
       </div>
     </div>
@@ -113,13 +113,13 @@ function Leaderboard() {
     console.log("sorted by likes")
     let temp_posts = posts
     let min = 0
-    let n = temp_posts.length - 1
+    let n = temp_posts.length
 
     // basic seletion sort
     for (let i = 0; i < n; i++) {
       min = i
-      for (let j = i + 1; j <= n; j++) {
-        if (temp_posts[j].props.children[2].props.children[1].props.id > temp_posts[min].props.children[2].props.children[1].props.id) {
+      for (let j = i + 1; j < n; j++) {
+        if (Number(temp_posts[j].props.children[2].props.children[1].props.id) > Number(temp_posts[min].props.children[2].props.children[1].props.id)) {
           min = j;
         }
       }
@@ -139,12 +139,12 @@ function Leaderboard() {
     console.log("sorted by recency")
     let temp_posts = posts
     let max = 0
-    let n = temp_posts.length - 1
+    let n = temp_posts.length
 
     // seletion sort
     for (let i = 0; i < n; i++) {
       max = i
-      for (let j = i + 1; j <= n; j++) {
+      for (let j = i + 1; j < n; j++) {
         if (temp_posts[j].props.id > temp_posts[max].props.id) {
           max = j;
         }
