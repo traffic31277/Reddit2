@@ -12,7 +12,7 @@ import SuggestionComments from './SuggestionComments.tsx';
 import SuggestionVotes from './SuggestionVotes.tsx';
 import '../css/leaderboard_page.css';
 
-const Post = ({username, content, comment_count=0}={username:'', content:'', comment_count:''}) => {
+const Content = ({username, content, comment_count=0}={username:'', content:'', comment_count:''}) => {
   // fill in with comments from aws (comment objects)
 
 	return (  
