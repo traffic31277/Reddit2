@@ -1,4 +1,5 @@
 import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
+import * as iam from "aws-cdk-lib/aws-iam";
 
 import { defineBackend } from '@aws-amplify/backend';
 import { auth } from './auth/resource';
@@ -74,7 +75,10 @@ users.grantReadWriteData(
   assignPseudonymLambda
 );
 
-topSuggestions.grantReadWriteData(
+suggestions.grantFullAccess(
   weeklyResetLambda
 );
 
+topSuggestions.grantReadWriteData(
+  weeklyResetLambda
+);
