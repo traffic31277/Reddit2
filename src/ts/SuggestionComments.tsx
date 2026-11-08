@@ -76,7 +76,6 @@ function SuggestionComments({
             return;
         }
 
-        // Preserve this ID if a network failure requires resubmission.
         if (pendingComment.current?.text !== cleanedText) {
             pendingComment.current = {
                 commentId: 'COMMENT_' + new Date().toISOString(),

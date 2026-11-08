@@ -29,8 +29,6 @@ const defaultTables = {
     users: 'Users',
 };
 
-// Keep the existing DynamoDB approach. The components handle display and input;
-// this file handles the reads and writes shared by comments and voting.
 export function createSuggestionStore(client: DynamoDBDocumentClient, tables = defaultTables) {
     async function readSuggestion(key: SuggestionKey) {
         const response = await client.send(
@@ -76,8 +74,6 @@ export function createSuggestionStore(client: DynamoDBDocumentClient, tables = d
             throw new Error("You can vote on other users' suggestions.");
         }
 
-        // Save the requested choice, rather than toggling on the server.
-        // Retrying a lost response therefore cannot accidentally remove a vote.
         for (let attempt = 0; attempt < 4; attempt += 1) {
             const previousVote = await readVote(key, userId);
             if (previousVote === nextVote) {
@@ -150,8 +146,6 @@ export function createSuggestionStore(client: DynamoDBDocumentClient, tables = d
                 if (name !== 'TransactionCanceledException' || attempt === 3) {
                     throw error;
                 }
-                // Another tab may have changed this vote. Re-read and apply
-                // the user's requested choice with a new conditional write.
                 await new Promise((resolve) => setTimeout(resolve, 25 * (attempt + 1)));
             }
         }
@@ -167,7 +161,6 @@ export function createSuggestionStore(client: DynamoDBDocumentClient, tables = d
                 new QueryCommand({
                     TableName: tables.comments,
                     KeyConditionExpression: 'suggestionId = :id',
-                    // Older comments may not contain suggestionUserId.
                     FilterExpression:
                         'attribute_not_exists(suggestionUserId) OR suggestionUserId = :author',
                     ExpressionAttributeValues: { ':id': key.suggestionId, ':author': key.userId },
@@ -273,8 +266,6 @@ export function createSuggestionStore(client: DynamoDBDocumentClient, tables = d
                 }),
             );
         } catch (error) {
-            // The server may have saved the comment even if its response was
-            // lost. Reuse the original ID and never increment the count twice.
             const saved = await findSavedComment();
             if (saved) {
                 return saved;
