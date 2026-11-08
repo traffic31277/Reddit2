@@ -121,8 +121,11 @@ export default function SuggestionVotes({
                 </svg>
             </button>
 
-            <span className='suggestion_vote_score'>
-                {likes}
+            <span
+                className="suggestion_vote_score"
+                aria-label={`Score: ${likes - dislikes}`}
+            >
+                {likes - dislikes}
             </span>
 
             <button
