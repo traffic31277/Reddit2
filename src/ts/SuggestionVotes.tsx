@@ -121,8 +121,11 @@ export default function SuggestionVotes({
                 </svg>
             </button>
 
-            <span className='suggestion_vote_score'>
-                {likes}
+            <span
+                className="suggestion_vote_score"
+                aria-label={`Score: ${likes - dislikes}`}
+            >
+                {likes - dislikes}
             </span>
 
             <button
@@ -139,17 +142,6 @@ export default function SuggestionVotes({
                 </svg>
             </button>
 
-            {error && (
-                <button
-                    className='suggestion_vote_error_marker'
-                    type='button'
-                    title={error}
-                    aria-label={`Retry voting: ${error}`}
-                    onClick={() => setRetryCount((count) => count + 1)}
-                >
-                    i
-                </button>
-            )}
             {saving && (
                 <span className='suggestion_vote_saving' role='status'>
                     Saving
