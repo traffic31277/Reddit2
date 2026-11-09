@@ -1,181 +1,159 @@
 /*
 * Code Reviewed By Brandon 11/1/2026.
-* Changed Suggestions values to match the recent updates to the Suggestions table.
-* Fixed a bug in the selection sort that ignored the last item in the array.
+* Keeps the original LIKES and NEWEST sorting options.
 */
 
-import { useEffect, useState } from 'react'
-import React from 'react'
-import '../css/leaderboard_page.css'
-import NavigationBar from './navbar.tsx';
-import { selectAllItems, pullPosts } from './DynamoFunctions.ts';
-import { S3Client } from "@aws-sdk/client-s3";
-import {
-  DynamoDBDocumentClient,
-  ExecuteStatementCommand,
-  BatchExecuteStatementCommand,
-} from "@aws-sdk/lib-dynamodb";
-import { fromIni, fromCognitoIdentityPool } from "@aws-sdk/credential-providers";
+import { useEffect, useState } from 'react';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { marshall } from '@aws-sdk/util-dynamodb'
-import { getPositionOfLineAndCharacter } from 'typescript';
+import { DynamoDBDocumentClient, ExecuteStatementCommand } from '@aws-sdk/lib-dynamodb';
+import { fromCognitoIdentityPool } from '@aws-sdk/credential-providers';
+import NavigationBar from './navbar.tsx';
+import SuggestionComments from './SuggestionComments.tsx';
+import SuggestionVotes from './SuggestionVotes.tsx';
+import '../css/leaderboard_page.css';
 
+interface Suggestion {
+    userId: string;
+    suggestionId: string;
+    pseudonym: string;
+    text: string;
+    likes: number;
+    dislikes: number;
+    comments: number;
+}
 
-// object for each individual post
-const Post = ({ username, content, comment_count = 0, like_count, order_id } = { username: '', content: '', comment_count: '', like_count: '', order_id: '' }) => {
-  // fill in with comments from aws (comment objects)
-  let user = username
-  let text = content
-  let comments = comment_count
-  let likes = like_count
-  let id = order_id
+interface PostProps {
+    suggestion: Suggestion;
+    onCountsChange: (suggestion: Suggestion, likes: number, dislikes: number) => void;
+}
 
-  return (
-    <div className='post_background' id={id}>
-      <h2 className='post_username'>{user}</h2>
-      <p className='post_content'>{text}</p>
-      <div className='comments_background'>
-        <p><b>Likes {likes}</b></p>
-        <h2 id={likes}></h2>
-      </div>
-    </div>
-  )
-};
+function Post({ suggestion, onCountsChange }: PostProps) {
+    return (
+        <div className='post_background' id={suggestion.suggestionId}>
+            <div className='post_main_row'>
+                <div className='post_text_column'>
+                    <h2 className='post_username'>{suggestion.pseudonym}</h2>
+                    <p className='post_content'>{suggestion.text}</p>
+                </div>
 
-// object for leaderboard page
-function Leaderboard() {
-  let [posts, setPosts] = useState<any[]>();
-  let [resorted, setResorted] = useState(0);
+                <aside className='post_vote_column' aria-label='Like or dislike this suggestion'>
+                    <SuggestionVotes
+                        suggestionId={suggestion.suggestionId}
+                        suggestionUserId={suggestion.userId}
+                        likes={suggestion.likes}
+                        dislikes={suggestion.dislikes}
+                        onCountsChange={(likes, dislikes) => onCountsChange(suggestion, likes, dislikes)}
+                    />
+                </aside>
+            </div>
 
-  // This is the function that generates the list of posts, it will run everytime the page loads.
-  useEffect(() => {
-    async function getPosts() {
+            <div className='comments_section'>
+                <SuggestionComments
+                    suggestionId={suggestion.suggestionId}
+                    suggestionUserId={suggestion.userId}
+                    initialCommentCount={suggestion.comments}
+                />
+            </div>
+        </div>
+    );
+}
 
-      // client for accessing Suggestions table with cognito identity pool 
-      // that has read access to the table. 
-      const client = new DynamoDBClient(
-        {
-          region: "us-east-2",
-          credentials: fromCognitoIdentityPool({
-            identityPoolId: 'us-east-2:12e12612-5d7f-4e29-b566-432accd9bcca',
-          }),
-        });
-      
-      
-      // pull every post, might add pagation if number of posts gets excessive.
-      const docClient = DynamoDBDocumentClient.from(client);
-      const params = {
-        Statement: `SELECT * FROM Suggestions`,
-      };
-    
-      try {
-        const data = await docClient.send(new ExecuteStatementCommand(params));
-        console.log("Items retrieved successfully");
+export default function Leaderboard() {
+    const [posts, setPosts] = useState<Suggestion[]>([]);
+    const [sortBy, setSortBy] = useState<'none' | 'likes' | 'newest'>('none');
+    const [error, setError] = useState('');
 
-        // grab array of items from api response
-        let post_list = data.Items
-        let posts_temp = []
-        // add try/except for that
+    useEffect(() => {
+        let active = true;
 
-        // for each post in the list, push corresponding information
-        // to the posts object. 
-        for (let i = 0; i < post_list.length; i++) {
-          let post = JSON.parse(JSON.stringify(post_list[i]))
+        async function getPosts() {
+            const client = new DynamoDBClient({
+                region: 'us-east-2',
+                credentials: fromCognitoIdentityPool({
+                    identityPoolId: 'us-east-2:12e12612-5d7f-4e29-b566-432accd9bcca',
+                }),
+            });
+            const docClient = DynamoDBDocumentClient.from(client);
 
-          posts_temp.push(Post({
-            username: String(post.pseudonym),
-            content: String(post.text),
-            comment_count: String(post.comments),
-            like_count: String(post.likes),
-            order_id: String(post.suggestionId)
-          }))
+            try {
+                const allPosts: Suggestion[] = [];
+                let nextToken: string | undefined;
+
+                do {
+                    const result = await docClient.send(new ExecuteStatementCommand({
+                        Statement: 'SELECT * FROM Suggestions',
+                        NextToken: nextToken,
+                    }));
+
+                    for (const item of result.Items ?? []) {
+                        allPosts.push({
+                            userId: String(item.userId),
+                            suggestionId: String(item.suggestionId),
+                            pseudonym: String(item.pseudonym ?? 'Anonymous'),
+                            text: String(item.text ?? ''),
+                            likes: Number(item.likes ?? 0),
+                            dislikes: Number(item.dislikes ?? 0),
+                            comments: Number(item.comments ?? 0),
+                        });
+                    }
+
+                    nextToken = result.NextToken;
+                } while (nextToken);
+
+                if (active) {
+                    setPosts(allPosts);
+                }
+            } catch (err) {
+                console.error('Error retrieving suggestions:', err);
+                if (active) {
+                    setError('Could not load suggestions.');
+                }
+            }
         }
 
-        setPosts(posts_temp)
+        void getPosts();
+        return () => { active = false; };
+    }, []);
 
-      } catch (err) {
-
-        console.error("Error retrieving items:", err);
-        throw err;
-      }
+    function updateVoteCounts(suggestion: Suggestion, likes: number, dislikes: number) {
+        setPosts((currentPosts) => currentPosts.map((post) => {
+            if (post.userId === suggestion.userId && post.suggestionId === suggestion.suggestionId) {
+                return { ...post, likes, dislikes };
+            }
+            return post;
+        }));
     }
 
-    getPosts();
-  }, []);
-
-  // updates listing when 'resorted' variable updates
-  useEffect(() => {
-    console.log(posts)
-  }, [resorted]);
-
-  // resorts current list of posts by like count.
-  function sort_likes() {
-    console.log("sorted by likes")
-    let temp_posts = posts
-    let min = 0
-    let n = temp_posts.length
-
-    // basic seletion sort
-    for (let i = 0; i < n; i++) {
-      min = i
-      for (let j = i + 1; j < n; j++) {
-        if (Number(temp_posts[j].props.children[2].props.children[1].props.id) > Number(temp_posts[min].props.children[2].props.children[1].props.id)) {
-          min = j;
-        }
-      }
-
-      let temp = temp_posts[i];
-      temp_posts[i] = temp_posts[min];
-      temp_posts[min] = temp;
-    };
-
-    // update Posts and then re-render by calling resorted UseEffect function with resorted update. 
-    setPosts(temp_posts);
-    setResorted(resorted + 1);
-  };
-
-  // resorts current list of posts by recency.
-  function sort_recency() {
-    console.log("sorted by recency")
-    let temp_posts = posts
-    let max = 0
-    let n = temp_posts.length
-
-    // seletion sort
-    for (let i = 0; i < n; i++) {
-      max = i
-      for (let j = i + 1; j < n; j++) {
-        if (temp_posts[j].props.id > temp_posts[max].props.id) {
-          max = j;
-        }
-      }
-
-      let temp = temp_posts[i];
-      temp_posts[i] = temp_posts[max];
-      temp_posts[max] = temp;
-
+    const visiblePosts = [...posts];
+    if (sortBy === 'likes') {
+        visiblePosts.sort((first, second) => second.likes - first.likes);
+    } else if (sortBy === 'newest') {
+        visiblePosts.sort((first, second) => second.suggestionId.localeCompare(first.suggestionId));
     }
-    
-    // update Posts and then re-render by calling resorted UseEffect function with resorted update. 
-    setPosts(temp_posts);
-    setResorted(resorted + 1);
-
-  };
 
   return (
     <>
       <div>
         <h1 className='heading'>Weekly Leaderboard</h1>
       </div>
+      
       <NavigationBar />
 
-      <div>
-        <button className='sort_button' onClick={sort_likes}>LIKES</button>
-        <button className='sort_button' onClick={sort_recency}>NEWEST</button>
-      </div>
-      <div>{posts}</div>
-    </>
-  )
-}
+            <div>
+                <button className='sort_button' onClick={() => setSortBy('likes')}>LIKES</button>
+                <button className='sort_button' onClick={() => setSortBy('newest')}>NEWEST</button>
+            </div>
 
-export default Leaderboard
+            {error && <p role='alert'>{error}</p>}
+            <div>
+                {visiblePosts.map((suggestion) => (
+                    <Post
+                        key={`${suggestion.userId}/${suggestion.suggestionId}`}
+                        suggestion={suggestion}
+                        onCountsChange={updateVoteCounts}
+                    />
+                ))}
+            </div>
+      </>
+    );
+}

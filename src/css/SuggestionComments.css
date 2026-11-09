@@ -1,0 +1,132 @@
+.suggestion_comments {
+    margin-left: 3vw;
+    margin-right: 3vw;
+    padding-bottom: 1.5vh;
+}
+
+.suggestion_comments .comments_background {
+    display: block;
+    width: 200px;
+    min-height: 25px;
+    margin: 0 0 1vh 0;
+    padding: 2px 15px;
+    border: none;
+    border-radius: 20px;
+    background-color: cadetblue;
+    color: white;
+    text-align: left;
+    cursor: pointer;
+}
+
+.suggestion_comments .comments_background:hover {
+    background-color: darkcyan;
+}
+
+.comments_panel {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 0 5px;
+}
+
+.comments_status {
+    margin-bottom: 10px;
+    color: black;
+}
+
+.comment_background {
+    box-sizing: border-box;
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    background-color: #f3ead3;
+    color: black;
+}
+
+.comment_username {
+    margin: 0 0 5px;
+    color: black;
+    font-size: 18px;
+}
+
+.comment_content {
+    margin: 0;
+    color: black;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.comment_form {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+    margin-top: 10px;
+}
+
+.comment_input {
+    flex: 1;
+    min-height: 70px;
+    resize: vertical;
+    box-sizing: border-box;
+    padding: 10px;
+    border: 1px solid #b8b8b8;
+    border-radius: 10px;
+    background-color: white;
+    color: black;
+    font: inherit;
+}
+
+.comment_button {
+    width: 150px;
+    min-height: 42px;
+    border-radius: 10px;
+    border: none;
+    background-color: cadetblue;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.comment_button:hover:not(:disabled) {
+    background-color: darkcyan;
+}
+
+.comment_button:disabled {
+    cursor: default;
+    opacity: 0.65;
+}
+
+.comment_error {
+    margin-top: 8px;
+    color: #9b1c1c;
+}
+
+.comment_like_sort_value {
+    display: none;
+}
+
+@media (max-width: 700px) {
+    .comment_form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .comment_button {
+        width: 100%;
+    }
+}
+
+/* Retry stays with the comments panel, not in the compact voting area. */
+.comment_retry {
+    margin-top: 8px;
+    padding: 6px 12px;
+    border: 0;
+    border-radius: 8px;
+    background: cadetblue;
+    color: white;
+    cursor: pointer;
+}
+
+.comment_retry:hover:not(:disabled) {
+    background: darkcyan;
+}

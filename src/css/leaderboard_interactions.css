@@ -1,0 +1,73 @@
+.leaderboard-page .suggestion-post {
+    position: relative;
+    display: block;
+    height: auto;
+}
+
+.leaderboard-page .suggestion-post-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.leaderboard-page .suggestion-post-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.leaderboard-page .suggestion-post-text {
+    overflow-wrap: anywhere;
+}
+
+.leaderboard-page .suggestion-votes {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-left: 15px;
+}
+
+.leaderboard-page .suggestion-vote-button {
+    background: none;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 4px;
+}
+
+.leaderboard-page .suggestion-vote-button:disabled {
+    cursor: default;
+    opacity: 0.65;
+}
+
+.leaderboard-page .suggestion-like-button {
+    border: 1px solid #2ecc71;
+    color: #16733d;
+}
+
+.leaderboard-page .suggestion-like-button[aria-pressed='true'] {
+    background: #e3f6ea;
+}
+
+.leaderboard-page .suggestion-dislike-button {
+    border: 1px solid #e74c3c;
+    color: #b53123;
+}
+
+.leaderboard-page .suggestion-dislike-button[aria-pressed='true'] {
+    background: #fde8e5;
+}
+
+.leaderboard-page .suggestion-score {
+    font-weight: bold;
+    font-size: 18px;
+    margin: 2px 0;
+}
+
+.leaderboard-page .suggestion-error {
+    color: red;
+    margin: 10px 0;
+}
+
+.leaderboard-page .leaderboard-empty {
+    text-align: center;
+    margin-top: 20px;
+}
