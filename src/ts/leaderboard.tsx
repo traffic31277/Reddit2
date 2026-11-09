@@ -67,7 +67,6 @@ export default function Leaderboard() {
         let active = true;
 
         async function getPosts() {
-            // Preserve the existing DynamoDB connection for loading suggestions.
             const client = new DynamoDBClient({
                 region: 'us-east-2',
                 credentials: fromCognitoIdentityPool({
@@ -80,7 +79,6 @@ export default function Leaderboard() {
                 const allPosts: Suggestion[] = [];
                 let nextToken: string | undefined;
 
-                // PartiQL can return multiple pages, so keep loading until it finishes.
                 do {
                     const result = await docClient.send(new ExecuteStatementCommand({
                         Statement: 'SELECT * FROM Suggestions',
@@ -126,7 +124,6 @@ export default function Leaderboard() {
         }));
     }
 
-    // These use the same sorting choices as the original leaderboard.
     const visiblePosts = [...posts];
     if (sortBy === 'likes') {
         visiblePosts.sort((first, second) => second.likes - first.likes);
