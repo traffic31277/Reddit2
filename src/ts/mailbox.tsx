@@ -15,7 +15,7 @@ function Mailbox() {
 	// const [loading, setLoading] = useState(true);
 
 	const checkUserHasSuggestion = async () => {
-		console.log("hello");
+		// console.log("hello");
 		const client = new DynamoDBClient(
 			{
 				region: "us-east-2",
