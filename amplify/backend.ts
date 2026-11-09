@@ -78,6 +78,4 @@ topSuggestions.grantReadWriteData(
   weeklyResetLambda
 );
 
-const authenticatedUserRole = backend.auth.resources.authenticatedUserIamRole;
-
 
