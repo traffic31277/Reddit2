@@ -80,11 +80,4 @@ topSuggestions.grantReadWriteData(
 
 const authenticatedUserRole = backend.auth.resources.authenticatedUserIamRole;
 
-users.grantReadData(
-  authenticatedUserRole
-);
-
-suggestions.grantReadWriteData(
-  authenticatedUserRole
-);
 
