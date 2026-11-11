@@ -19,6 +19,14 @@ import { getCurrentUser } from 'aws-amplify/auth';
 function MakeSuggestion() {
     const navigate = useNavigate();
     
+    const client = new DynamoDBClient(
+        {
+            region: "us-east-2",
+            credentials: fromCognitoIdentityPool({
+                identityPoolId: 'us-east-2:12e12612-5d7f-4e29-b566-432accd9bcca',
+            }),
+        }
+    );
 
     const docClient = DynamoDBDocumentClient.from(client);
 
