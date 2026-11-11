@@ -8,7 +8,7 @@ import '../css/navbar.css';
 function NavigationButton ({label, destination}: {label:String; destination:String}) {
   return (
     <a href={destination} className='navButton'>
-      <h2>{label}</h2>
+      <p>{label}</p>
     </a>
   );
 };
@@ -19,7 +19,7 @@ function NavigationBar () {
       <div className='navbar'>
         <ul>
           <li><NavigationButton label='Home' destination='/mail'/></li>
-          <li><NavigationButton label='Weekly Leaderboard' destination='/leaderboard'/></li>
+          <li><NavigationButton label='Leaderboard' destination='/leaderboard'/></li>
           <li><NavigationButton label='Archive' destination='/archive'/></li>
         </ul>
       </div>
