@@ -58,6 +58,24 @@ function Post({ suggestion, onCountsChange }: PostProps) {
     );
 }
 
+// Function to get the start and end timestamps of the current week (Monday to Sunday)
+function getWeekRange(now = new Date()) {
+    const start = new Date(now);
+    start.setUTCDate(start.getUTCDate() - (start.getUTCDay() + 6) % 7); // Set to Monday
+    start.setUTCHours(6, 0, 0, 0); // Set to 6 AM UTC
+
+    // If the start of the week is in the future, adjust it to the previous week
+    if (start.getTime() > now.getTime()) {
+        start.setUTCDate(start.getUTCDate() - 7);
+    }
+
+    // The end of the week is 7 days after the start
+    return {
+        start: start.getTime(),
+        end: start.getTime() + 7 * 24 * 60 * 60 * 1000
+    };
+}
+
 export default function Leaderboard() {
     const [posts, setPosts] = useState<Suggestion[]>([]);
     const [sortBy, setSortBy] = useState<'none' | 'likes' | 'newest'>('none');
@@ -124,14 +142,15 @@ export default function Leaderboard() {
         }));
     }
 
-    const visiblePosts = [...posts];
-    if (sortBy === 'likes') {
-        visiblePosts.sort((first, second) => second.likes - first.likes);
-    } else if (sortBy === 'newest') {
-        visiblePosts.sort((first, second) => second.suggestionId.localeCompare(first.suggestionId));
-    }
+    const { start, end } = getWeekRange();
 
-  return (
+    // Filter posts to only include those created within the current week
+    const visiblePosts = posts.filter((post) => { 
+        const created = Date.parse(post.suggestionId.slice('SUGGESTION_'.length)); 
+        return created >= start && created < end; 
+    });
+
+return (
     <>
       <div>
         <h1 className='heading'>Weekly Leaderboard</h1>
