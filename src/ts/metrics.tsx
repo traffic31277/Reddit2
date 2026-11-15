@@ -276,7 +276,7 @@ export default function MetricsDashboard() {
             {error && <div className="error_message">{error}</div>}
 
             <div>
-                <button className="suggestion_button" onClick={loadMetrics}>
+                <button className="button" onClick={loadMetrics}>
                     Refresh Current Metrics
                 </button>
             </div>
