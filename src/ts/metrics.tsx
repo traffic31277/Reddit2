@@ -3,7 +3,13 @@ import { CloudWatchClient, GetMetricDataCommand } from "@aws-sdk/client-cloudwat
 import { fromCognitoIdentityPool } from '@aws-sdk/credential-providers';
 import '../css/metrics.css';
 import NavigationBar from "./navbar";
+import { fetchAuthSession } from 'aws-amplify/auth';
 
+
+const ADMIN_EMAILS = [
+    'mdlmasenda@gmail.com',
+    'brandonfortes@gmail.com',
+];
 
 function getRangeConfig(selectedRange: string) {
     const currentDate = new Date();
@@ -26,6 +32,7 @@ function getRangeConfig(selectedRange: string) {
 }
 
 export default function MetricsDashboard() {
+    const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
     const [metrics, setMetrics] = useState<any[]>([]);
     const [range, setRange] = useState<'1h' | '24h' | '7d' | 'all'>('24h');
     const [loading, setLoading] = useState(true);
@@ -192,6 +199,49 @@ export default function MetricsDashboard() {
             setLoading(false);
         }
     };
+
+    // Check if user is an Admin, if so allow them to view the metrics
+    useEffect(() => {
+        async function checkAdmin() {
+            try {
+                const session = await fetchAuthSession();
+
+                const userEmail = session.tokens?.idToken?.payload?.email as string | undefined;
+
+                if (!userEmail || !ADMIN_EMAILS.includes(userEmail.toLowerCase())) {
+                    setIsAdmin(false);
+                    return;
+                }
+
+                setIsAdmin(true);
+                loadMetrics();
+            }
+
+            catch (err: any) {
+                setIsAdmin(false);
+                console.error("The current user is not an admin", err.message);
+            }
+        }
+
+        checkAdmin();
+    }, []);
+
+    if (isAdmin === null) {
+        return (
+            <main>
+                <p>Checking admin permissions...</p>
+            </main>
+        )
+    }
+
+    if (!isAdmin) {
+        return (
+            <main>
+                <h1>Access Denied</h1>
+                <p>You do not have permissions to view this dashboard</p>
+            </main>
+        )
+    }
 
     useEffect(() => {
         loadMetrics();  // Pull the metrics everytime the page loads
