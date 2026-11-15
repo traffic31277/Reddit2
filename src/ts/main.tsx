@@ -19,6 +19,7 @@ import {
     Routes, Route,
     Link
 } from 'react-router-dom';
+import MetricsDashboard from './metrics.tsx';
 
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -34,6 +35,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route path='/leaderboard' element={<Leaderboard/>}/>
           <Route path='/suggest' element={<MakeSuggestion/>}/>
           <Route path='/archive' element={<Archive/>}/>
+          <Route path='/metrics' element={<MetricsDashboard/>}/>
         </Routes>
       </Router>
   </React.StrictMode>
