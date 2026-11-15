@@ -5,6 +5,7 @@ import '../css/metrics.css';
 import NavigationBar from "./navbar";
 import { fetchAuthSession } from 'aws-amplify/auth';
 import { Pass } from 'aws-cdk-lib/aws-stepfunctions';
+import { useNavigate } from 'react-router-dom';
 
 
 const ADMIN_EMAILS = [
@@ -39,6 +40,8 @@ export default function MetricsDashboard() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [lastUpdated, setLastUpdated] = useState('');
+
+    const navigate = useNavigate();
 
 // Async function to pull all metrics from CloudWatch
     const loadMetrics = async (selectedRange = range) => {
@@ -242,11 +245,21 @@ export default function MetricsDashboard() {
         );
     }
 
+    // Sends the user to the metrics page
+    const handleTransport = async () => {
+        console.log('Sending user to metrics page!');
+        navigate('/');
+    }
+
     if (!isAdmin) {
         return (
             <main>
                 <h1>Access Denied</h1>
                 <p>You do not have permissions to view this dashboard</p>
+
+                <button type="button" onClick={handleTransport}>
+                    <b>Return to Signup</b>
+                </button>
             </main>
         );
     }

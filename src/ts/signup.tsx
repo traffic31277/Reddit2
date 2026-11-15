@@ -89,6 +89,12 @@ export default function Signup() {
         navigate('/reset');
     }
 
+    // Sends the user to the metrics page
+    const handleMetrics = async () => {
+        console.log('Sending user to metrics page!');
+        navigate('/metrics');
+    }
+
     return (
         <div className="signup-page">
             <div className="signup-card">
@@ -129,7 +135,11 @@ export default function Signup() {
                 </button>
 
                 <button type="button" onClick={handleResetPassword} disabled={loading}>
-                    <b>{loading ? 'Resetting Passsword...' : 'Reset Password'}</b>
+                    <b>{loading ? 'Resetting Password...' : 'Reset Password'}</b>
+                </button>
+
+                <button type="button" onClick={handleMetrics} disabled={loading}>
+                    <b>{loading ? 'Transporting to Metrics...' : 'Metrics'}</b>
                 </button>
             </div>
     </div>
