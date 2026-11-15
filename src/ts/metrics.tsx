@@ -10,7 +10,8 @@ import { useNavigate } from 'react-router-dom';
 
 const ADMIN_EMAILS = [
     'mdlmasenda@gmail.com',
-    'brandonfortes@gmail.com',
+    'brandonfortes2025@gmail.com',
+    'fortesbrandon2505@gmail.com',
 ];
 
 function getRangeConfig(selectedRange: string) {
