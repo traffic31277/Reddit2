@@ -4,6 +4,7 @@ import { fromCognitoIdentityPool } from '@aws-sdk/credential-providers';
 import '../css/metrics.css';
 import NavigationBar from "./navbar";
 import { fetchAuthSession } from 'aws-amplify/auth';
+import { Pass } from 'aws-cdk-lib/aws-stepfunctions';
 
 
 const ADMIN_EMAILS = [
@@ -39,7 +40,7 @@ export default function MetricsDashboard() {
     const [error, setError] = useState('');
     const [lastUpdated, setLastUpdated] = useState('');
 
-    // Async function pull all metrics from CloudWatch
+    // Async function to pull all metrics from CloudWatch
     const loadMetrics = async () => {
         console.log("Trying to load metrics");
         try {
@@ -168,6 +169,7 @@ export default function MetricsDashboard() {
 
             // Receive the response from CloudWatch
             const response = await client.send(command);
+            console.log("RAW client response: ", JSON.stringify(response, null, 2));
 
             // Format the timestamp and values into rows
             const metricData: Record<string, any> = {};
@@ -207,6 +209,7 @@ export default function MetricsDashboard() {
                 const session = await fetchAuthSession();
 
                 const userEmail = session.tokens?.idToken?.payload?.email as string | undefined;
+                console.log("Admin email: ", session.tokens?.idToken?.payload?.email as string | undefined);
 
                 if (!userEmail || !ADMIN_EMAILS.includes(userEmail.toLowerCase())) {
                     setIsAdmin(false);
@@ -234,6 +237,10 @@ export default function MetricsDashboard() {
         )
     }
 
+    else {
+        Pass
+    }
+
     if (!isAdmin) {
         return (
             <main>
@@ -242,6 +249,12 @@ export default function MetricsDashboard() {
             </main>
         )
     }
+
+    else {
+        Pass
+    }
+
+    console.log("After the admin check");
 
     useEffect(() => {
         loadMetrics();  // Pull the metrics everytime the page loads
@@ -253,6 +266,8 @@ export default function MetricsDashboard() {
 
     // Set the latest metrics
     const latest = metrics[metrics.length - 1] || {};
+
+    console.log("Trying to load the metrics: ", latest);
 
     return (
         <main>
