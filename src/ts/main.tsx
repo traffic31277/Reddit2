@@ -9,6 +9,7 @@ import Mailbox from './mailbox.tsx';
 import Leaderboard from './leaderboard.tsx';
 import Reset from './reset.tsx';
 import ResetPassword from './resetPassword.tsx';
+import MetricsDashboard from './metrics.tsx';
 import SuggestionVotes from './SuggestionVotes.tsx';
 import Archive from './archive.tsx'
 import '@aws-amplify/ui-react/styles.css';
@@ -19,7 +20,6 @@ import {
     Routes, Route,
     Link
 } from 'react-router-dom';
-import MetricsDashboard from './metrics.tsx';
 
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

@@ -5,8 +5,6 @@ import '../css/metrics.css';
 import NavigationBar from "./navbar";
 
 
-const [range, setRange] = useState<'1h' | '24h' | '7d' | 'all'>('24h');
-
 function getRangeConfig(selectedRange: string) {
     const currentDate = new Date();
     const HOUR = 60 * 60 * 1000;
@@ -29,6 +27,7 @@ function getRangeConfig(selectedRange: string) {
 
 export default function MetricsDashboard() {
     const [metrics, setMetrics] = useState<any[]>([]);
+    const [range, setRange] = useState<'1h' | '24h' | '7d' | 'all'>('24h');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [lastUpdated, setLastUpdated] = useState('');
