@@ -12,6 +12,7 @@ const ADMIN_EMAILS = [
     'mdlmasenda@gmail.com',
     'brandonfortes2025@gmail.com',
     'fortesbrandon2505@gmail.com',
+    'cosmomail12@gmail.com',
 ];
 
 function getRangeConfig(selectedRange: string) {
@@ -311,6 +312,8 @@ export default function MetricsDashboard() {
                                     <th>Requests</th>
                                     <th>Client Error</th>
                                     <th>Server Error</th>
+                                    <th>Bytes Uploaded</th>
+                                    <th>Bytes Downloaded</th>
                                     <th>Latency (ms)</th>
                                 </tr>
                             </thead>
@@ -333,6 +336,8 @@ export default function MetricsDashboard() {
                                                 <td>{row.total_requests ?? 0}</td>
                                                 <td>{row.client_errors ?? 0}</td>
                                                 <td>{row.server_errors ?? 0}</td>
+                                                <td>{row.bytes_uploaded ?? 0}</td>
+                                                <td>{row.bytes_downloaded ?? 0}</td>
                                                 <td>{Math.round(row.latency ?? 0).toFixed(3)}</td>
                                             </tr>
                                         ))
