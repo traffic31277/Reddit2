@@ -41,7 +41,7 @@ export default function MetricsDashboard() {
     const [lastUpdated, setLastUpdated] = useState('');
 
 // Async function to pull all metrics from CloudWatch
-    const loadMetrics = async () => {
+    const loadMetrics = async (selectedRange = range) => {
         console.log("Trying to load metrics");
         try {
             // Access the CloudWatch Client
@@ -54,7 +54,7 @@ export default function MetricsDashboard() {
 
             // All the constants for the metrics
             const namespace = "AWS/AmplifyHosting";
-            const amplifyAppName = "Reddit2";
+            const amplifyAppName = "App";
             const amplifyAppId = "d2doi1xqfq91i";
 
             // Determine the time range of the metrics 
@@ -196,6 +196,10 @@ export default function MetricsDashboard() {
             console.error("The try function failed: ", err.message);
             setError(err.message || "Could not pull metrics");
         }
+
+        finally {
+            setLoading(false);
+        }
     };
 
     // Check if user is an Admin, if so allow them to view the metrics
@@ -270,17 +274,17 @@ export default function MetricsDashboard() {
                 <div>
                     <div>
                         <h3>Amplify Requests (Last Min)</h3>
-                        <p>{latest.requests ?? 0}</p>
+                        <p>{latest.total_requests ?? 0}</p>
                     </div>
 
                     <div>
                         <h3>Server Errors</h3>
-                        <p>{latest.server_error ?? 0}</p>
+                        <p>{latest.server_errors ?? 0}</p>
                     </div>
 
                     <div>
                         <h3>Client Errors</h3>
-                        <p>{latest.client_error ?? 0}</p>
+                        <p>{latest.client_errors ?? 0}</p>
                     </div>
 
 
@@ -311,11 +315,11 @@ export default function MetricsDashboard() {
                                             <tr key={row.timestamp}>
                                                 <td>{range === '1h' || range === '24h'
                                                 ? new Date(row.timestamp).toLocaleTimeString()
-                                                : new Date(row.timestamp).toLocaleTimeString()}</td>
-                                                <td>{row.requests ?? 0}</td>
-                                                <td>{row.client_error ?? 0}</td>
-                                                <td>{row.server_error ?? 0}</td>
-                                                <td>{Math.round(row.latency ?? 0)}</td>
+                                                : new Date(row.timestamp).toLocaleDateString()}</td>
+                                                <td>{row.total_requests ?? 0}</td>
+                                                <td>{row.client_errors ?? 0}</td>
+                                                <td>{row.server_errors ?? 0}</td>
+                                                <td>{Math.round(row.latency ?? 0).toFixed(3)}</td>
                                             </tr>
                                         ))
                                     )}
