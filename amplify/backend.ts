@@ -77,5 +77,3 @@ users.grantReadWriteData(
 topSuggestions.grantReadWriteData(
   weeklyResetLambda
 );
-
-

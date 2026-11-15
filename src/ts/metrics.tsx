@@ -1,8 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { CloudWatchClient, GetMetricDataCommand } from "@aws-sdk/client-cloudwatch";
 import { fromCognitoIdentityPool } from '@aws-sdk/credential-providers';
+import '../css/metrics.css';
 import NavigationBar from "./navbar";
 
+
+const [range, setRange] = useState<'1h' | '24h' | '7d' | 'all'>('24h');
+
+function getRangeConfig(selectedRange: string) {
+    const currentDate = new Date();
+    const HOUR = 60 * 60 * 1000;
+    const DAY = 24 * HOUR;
+
+    switch (selectedRange) {
+        case '1h':
+            return { startTime: new Date(currentDate.getTime() - HOUR), period: 60 };
+        case '24h':
+            return { startTime: new Date(currentDate.getTime() - DAY), period: 300 };
+        case '7d':
+            return { startTime: new Date(currentDate.getTime() - 7 * DAY), period: 3600 };
+        case 'all':
+            return { startTime: new Date(currentDate.getTime() - 455 * DAY), period: 86400 };
+        default:
+            // 455 days is the maximum for CloudWatch (15-months)
+            return { startTime: new Date(currentDate.getTime() - 455 * DAY), period: 86400}
+    }
+}
 
 export default function MetricsDashboard() {
     const [metrics, setMetrics] = useState<any[]>([]);
@@ -10,9 +33,10 @@ export default function MetricsDashboard() {
     const [error, setError] = useState('');
     const [lastUpdated, setLastUpdated] = useState('');
 
+    // Async function pull all metrics from CloudWatch
     const loadMetrics = async () => {
+        console.log("Trying to load metrics");
         try {
-
             // Access the CloudWatch Client
             const client = new CloudWatchClient({
                 region: "us-east-2",
@@ -25,23 +49,21 @@ export default function MetricsDashboard() {
             const namespace = "AWS/AmplifyHosting";
             const amplifyAppName = "Reddit2";
             const amplifyAppId = "d2doi1xqfq91i";
-            const minutesBack = 60;
 
             // Determine the time range of the metrics 
-            const currentDate = new Date();
-            const oneHourAgo = new Date(currentDate.getTime() - minutesBack * 60 * 1000);
+            const { startTime, period } = getRangeConfig(range);
 
             // Using GetMetricData to request all the metric data
             const command = new GetMetricDataCommand ({
-                StartTime: oneHourAgo,
-                EndTime: currentDate,
+                StartTime: startTime,
+                EndTime: new Date(),
                 ScanBy: "TimestampAscending",
                 
                 // Include the metrics we want to query for from CloudWatch
                 MetricDataQueries: [
                     // Total requests given to the server
                     {
-                        Id: "total-requests",
+                        Id: "total_requests",
                         Label: "Total Requests",
                         MetricStat: {
                             Metric: {
@@ -49,7 +71,7 @@ export default function MetricsDashboard() {
                                 MetricName: "Requests",
                                 Dimensions: [{ Name: amplifyAppName , Value: amplifyAppId }]
                             },
-                            Period: 300, // Data points with a period of 300 seconds (5-minute) are available for 63 days.
+                            Period: period, // Data points with a period of 300 seconds (5-minute) are available for 63 days.
                             Stat: "Sum",
                         },
                     },
@@ -64,7 +86,7 @@ export default function MetricsDashboard() {
                                 MetricName: "4xxErrors",
                                 Dimensions: [{ Name: amplifyAppName , Value: amplifyAppId }]
                             },
-                            Period: 300, // Data points with a period of 300 seconds (5-minute) are available for 63 days.
+                            Period: period, // Data points with a period of 300 seconds (5-minute) are available for 63 days.
                             Stat: "Sum",
                         },
                     },
@@ -79,7 +101,7 @@ export default function MetricsDashboard() {
                                 MetricName: "5xxErrors",
                                 Dimensions: [{ Name: amplifyAppName , Value: amplifyAppId }]
                             },
-                            Period: 300, // Data points with a period of 300 seconds (5-minute) are available for 63 days.
+                            Period: period, // Data points with a period of 300 seconds (5-minute) are available for 63 days.
                             Stat: "Sum"
                         },
                     },
@@ -94,7 +116,7 @@ export default function MetricsDashboard() {
                                 MetricName: "BytesDownloaded",
                                 Dimensions: [{ Name: amplifyAppName , Value: amplifyAppId }]
                             },
-                            Period: 300, // Data points with a period of 300 seconds (5-minute) are available for 63 days.
+                            Period: period, // Data points with a period of 300 seconds (5-minute) are available for 63 days.
                             Stat: "Sum",
                         },
                     },
@@ -109,7 +131,7 @@ export default function MetricsDashboard() {
                                 MetricName: "BytesUploaded",
                                 Dimensions: [{ Name: amplifyAppName , Value: amplifyAppId }]
                             },
-                            Period: 300, // Data points with a period of 300 seconds (5-minute) are available for 63 days.
+                            Period: period, // Data points with a period of 300 seconds (5-minute) are available for 63 days.
                             Stat: "Sum",
                         },
                     },
@@ -124,7 +146,7 @@ export default function MetricsDashboard() {
                                 MetricName: "Latency",
                                 Dimensions: [{ Name: amplifyAppName , Value: amplifyAppId }]
                             },
-                            Period: 300, // Data points with a period of 300 seconds (5-minute) are available for 63 days.
+                            Period: period, // Data points with a period of 300 seconds (5-minute) are available for 63 days.
                             Stat: "Average",
                         },
                     },
@@ -133,7 +155,7 @@ export default function MetricsDashboard() {
                     {
                         Id: "error_rate",
                         Label: "Error Rate (%)",
-                        Expression: "IF(requests > 0, ((client_errors + server_errors) / requests) * 100, 0)"
+                        Expression: "IF(total_requests > 0, ((client_errors + server_errors) / total_requests) * 100, 0)"
                     },
                 ],
             });
@@ -150,7 +172,7 @@ export default function MetricsDashboard() {
                     if (!metricData[isoString]) {
                         metricData[isoString] = { timestamp: isoString }
                     }
-                    metricData[isoString][metric.Id?] = metric.Values?.[index] ?? 0;
+                    metricData[isoString][metric.Id!] = metric.Values?.[index] ?? 0;
                 });
             }
 
@@ -163,6 +185,7 @@ export default function MetricsDashboard() {
         }
 
         catch (err: any) {
+            console.error("The try function failed: ", err.message);
             setError(err.message || "Could not pull metrics");
         }
 
@@ -205,41 +228,72 @@ export default function MetricsDashboard() {
                     </div>
 
                     <div>
-                        <h3>5xx Server Errors</h3>
+                        <h3>Server Errors</h3>
                         <p>{latest.server_error ?? 0}</p>
                     </div>
 
                     <div>
-                        <h3>4xx Client Errors</h3>
+                        <h3>Client Errors</h3>
                         <p>{latest.client_error ?? 0}</p>
                     </div>
-                    
+
+
                     {/* Recent History Table*/}
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Time</th>
-                                <th>Requests</th>
-                                <th>Client Error</th>
-                                <th>Server Error</th>
-                                <th>Latency (ms)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {metrics
-                            .slice(-15)
-                            .reverse()
-                            .map((row) => (
-                                <tr key={row.timestamp}>
-                                    <td>{new Date(row.timestamp).toLocaleDateString()}</td>
-                                    <td>{row.requests ?? 0}</td>
-                                    <td>{row.client_error ?? 0}</td>
-                                    <td>{row.server_error ?? 0}</td>
-                                    <td>{Math.round(row.latency ?? 0)}</td>
+                    <div className='metrics_table_container'>
+                        <table className='metrics_table'>
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Requests</th>
+                                    <th>Client Error</th>
+                                    <th>Server Error</th>
+                                    <th>Latency (ms)</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {metrics.length === 0 ? (
+                                    <tr>
+                                        <td colSpan={5}>
+                                            There is no metric data available at the time.
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    metrics
+                                        .slice(-15)
+                                        .reverse()
+                                        .map((row) => (
+                                            <tr key={row.timestamp}>
+                                                <td>{range === '1h' || range === '24h'
+                                                ? new Date(row.timestamp).toLocaleTimeString()
+                                                : new Date(row.timestamp).toLocaleTimeString()}</td>
+                                                <td>{row.requests ?? 0}</td>
+                                                <td>{row.client_error ?? 0}</td>
+                                                <td>{row.server_error ?? 0}</td>
+                                                <td>{Math.round(row.latency ?? 0)}</td>
+                                            </tr>
+                                        ))
+                                    )}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div>
+                        <button className='suggestion_button' onClick={() => setRange('1h')}>
+                            1 Hour
+                        </button>
+
+                        <button className='suggestion_button' onClick={() => setRange('24h')}>
+                            24 Hours
+                        </button>
+
+                        <button className='suggestion_button' onClick={() => setRange('7d')}>
+                            7 Days
+                        </button>
+                        
+                        <button className='suggestion_button' onClick={() => setRange('all')}>
+                            All Time
+                        </button>
+                    </div>
                 </div>
             )}
 
