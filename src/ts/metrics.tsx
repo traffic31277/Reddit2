@@ -40,7 +40,7 @@ export default function MetricsDashboard() {
     const [error, setError] = useState('');
     const [lastUpdated, setLastUpdated] = useState('');
 
-    // Async function to pull all metrics from CloudWatch
+// Async function to pull all metrics from CloudWatch
     const loadMetrics = async () => {
         console.log("Trying to load metrics");
         try {
@@ -196,14 +196,12 @@ export default function MetricsDashboard() {
             console.error("The try function failed: ", err.message);
             setError(err.message || "Could not pull metrics");
         }
-
-        finally {
-            setLoading(false);
-        }
     };
 
     // Check if user is an Admin, if so allow them to view the metrics
     useEffect(() => {
+        let timer: ReturnType<typeof setInterval>
+
         async function checkAdmin() {
             try {
                 const session = await fetchAuthSession();
@@ -217,7 +215,8 @@ export default function MetricsDashboard() {
                 }
 
                 setIsAdmin(true);
-                loadMetrics();
+                await loadMetrics();
+                timer = setInterval(loadMetrics, 60_000);
             }
 
             catch (err: any) {
@@ -227,18 +226,16 @@ export default function MetricsDashboard() {
         }
 
         checkAdmin();
-    }, []);
+        return () => clearInterval(timer);
+    }, [range]);
 
     if (isAdmin === null) {
         return (
             <main>
                 <p>Checking admin permissions...</p>
+                <NavigationBar />
             </main>
-        )
-    }
-
-    else {
-        Pass
+        );
     }
 
     if (!isAdmin) {
@@ -247,26 +244,11 @@ export default function MetricsDashboard() {
                 <h1>Access Denied</h1>
                 <p>You do not have permissions to view this dashboard</p>
             </main>
-        )
+        );
     }
-
-    else {
-        Pass
-    }
-
-    console.log("After the admin check");
-
-    useEffect(() => {
-        loadMetrics();  // Pull the metrics everytime the page loads
-
-        // Automatically refresh the page every 60 seconds
-        const interval = setInterval(loadMetrics, 60_000);
-        return () => clearInterval(interval);
-    }, []);
 
     // Set the latest metrics
     const latest = metrics[metrics.length - 1] || {};
-
     console.log("Trying to load the metrics: ", latest);
 
     return (
