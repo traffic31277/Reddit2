@@ -8,7 +8,7 @@ import '../css/navbar.css';
 function NavigationButton ({label, destination}: {label:String; destination:String}) {
   return (
     <a href={destination} className='navButton'>
-      <p>{label}</p>
+      <h2>{label}</h2>
     </a>
   );
 };
