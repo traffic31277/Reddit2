@@ -48,3 +48,16 @@
   transform: scale(0.98);
 }
 
+body:has(.suggestion-container) #root {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    border: none;
+}
+
+.suggestion-container {
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100svh;
+    box-sizing: border-box;
+}
