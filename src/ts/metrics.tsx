@@ -1,3 +1,10 @@
+/*
+* Code Reviewed by Brandon
+* November 16, 2026
+* 
+* Added Lily to admin list, removed my alt email for retro
+*/
+
 import React, { useState, useEffect } from 'react';
 import { CloudWatchClient, GetMetricDataCommand } from "@aws-sdk/client-cloudwatch";
 import { fromCognitoIdentityPool } from '@aws-sdk/credential-providers';
@@ -11,8 +18,8 @@ import { useNavigate } from 'react-router-dom';
 const ADMIN_EMAILS = [
     'mdlmasenda@gmail.com',
     'brandonfortes2025@gmail.com',
-    'fortesbrandon2505@gmail.com',
     'cosmomail12@gmail.com',
+    'l4wmailing@duck.com'
 ];
 
 function getRangeConfig(selectedRange: string) {
