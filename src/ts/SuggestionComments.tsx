@@ -11,7 +11,7 @@ interface SuggestionCommentsProps {
     initialCommentCount: number;
 }
 
-const COMMENT_COOLDOWN = 30_000;
+const COMMENT_COOLDOWN = 20_000;
 const COMMENT_PREFIX = 'COMMENT_';
 
 function getCommentTimestamp(commentId: string): number {
