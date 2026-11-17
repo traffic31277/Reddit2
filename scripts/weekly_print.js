@@ -56,39 +56,42 @@ async function main() {
     suggestionLastKey = page.LastEvaluatedKey;
   } while (suggestionLastKey);
   
-  // There should only be 1 suggestion here, but just in case
-  const topSuggestion = suggestions[0]; 
+  console.log("Printing Suggestions...");
   
-  // Extract the suggestion post date from the suggestionId.
-  const suggestionDateStr = topSuggestion.suggestionId.substring(11);
-  const suggestionDate = new Date(suggestionDateStr);
-  
-  // Format the date in a more readable manner
-  const formattedDate = suggestionDate.toLocaleString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12:  true    
-  });
-  
-  // Do da printing
-  device.open(function(err) {
-    printer
-    .font('a')
-    .align('lt')
-    .style("bu")
-    .size(2, 2)
-    .text(`${topSuggestion.pseudonym}\n`)
-    .size(1, 1)
-    .text(`${formattedDate}\n`)
-    .text(` ${topSuggestion.text}\n`)
-    .text(`Likes: ${topSuggestion.likes}  Comments: ${topSuggestion.comments}`)
-    .feed(1)
-    .cut()
-    .close();
-  });
+  // If there happens to be multiple (due to a tie or bug), print them each)
+  for (const topSuggestion of suggestions) {
+      
+    // Extract the suggestion post date from the suggestionId.
+    const suggestionDateStr = topSuggestion.suggestionId.substring(11);
+    const suggestionDate = new Date(suggestionDateStr);
+    
+    // Format the date in a more readable manner
+    const formattedDate = suggestionDate.toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12:  true    
+    });
+    
+    // Do da printing
+    device.open(function(err) {
+      printer
+      .font('a')
+      .align('lt')
+      .style("bu")
+      .size(2, 2)
+      .text(`${topSuggestion.pseudonym}\n`)
+      .size(1, 1)
+      .text(`${formattedDate}\n`)
+      .text(` ${topSuggestion.text}\n`)
+      .text(`Likes: ${topSuggestion.likes}  Comments: ${topSuggestion.comments}`)
+      .feed(1)
+      .cut()
+      .close();
+    });
+  }
 }
 
 main().catch(error => {
