@@ -1,6 +1,6 @@
 /*
-* Code Reviewed By Brandon 11/1/2026.
-* Keeps the original LIKES and NEWEST sorting options.
+* Code Reviewed By Brandon 11/16/2026.
+
 */
 
 import { useEffect, useState } from 'react';
