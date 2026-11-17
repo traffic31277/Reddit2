@@ -11,6 +11,7 @@ import Reset from './reset.tsx';
 import ResetPassword from './resetPassword.tsx';
 import SuggestionVotes from './SuggestionVotes.tsx';
 import Archive from './archive.tsx'
+import LandingPage from './landingpage.tsx';
 import '@aws-amplify/ui-react/styles.css';
 import '../css/index.css';
 
@@ -25,8 +26,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
       <Router>
         <Routes>
-          <Route path='/' element={<Signup/>}/>
+          <Route path='/' element={<LandingPage/>}/>
           <Route path='/login' element={<Login/>}/>
+          <Route path='/signup' element={<Signup/>}/>
           <Route path='/reset' element={<Reset/>}/>
           <Route path='/resetPassword' element={<ResetPassword/>}/>
           <Route path='/verify' element={<Verification/>}/>
