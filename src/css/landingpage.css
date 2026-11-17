@@ -1,3 +1,15 @@
+body:has(.landing-page) {
+  margin: 0;
+  background: linear-gradient(180deg, #fbf7db 0%, #339fd1 100%);
+}
+
+body:has(.landing-page) #root {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  border: none;
+}
+
 .landing-page {
   min-height: 100svh;
   width: 100%;
@@ -68,6 +80,7 @@
   text-underline-offset: 4px;
 }
 
+/* Focus styles for accessibility */
 .landing-button:focus-visible,
 .landing-reset:focus-visible {
   outline: 3px solid #123e4d;
