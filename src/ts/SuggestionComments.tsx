@@ -11,7 +11,7 @@ interface SuggestionCommentsProps {
     initialCommentCount: number;
 }
 
-const COMMENT_COOLDOWN = 20_000;
+const COMMENT_COOLDOWN = 30_000;
 const COMMENT_PREFIX = 'COMMENT_';
 
 function getCommentTimestamp(commentId: string): number {
@@ -114,7 +114,7 @@ function SuggestionComments({
                     if (timeElapsed < COMMENT_COOLDOWN) {
                         const secondsLeft = Math.ceil((COMMENT_COOLDOWN - timeElapsed) / 1000);
                         setError(
-                            "Please wait ${secondsLeft} second${secondsLeft === 1 ? '' : 's'} before commenting again.",
+                            `Please wait ${secondsLeft} second${secondsLeft === 1 ? '' : 's'} before commenting again.`,
                         );
                         return;
                     }
