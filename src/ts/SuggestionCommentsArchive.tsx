@@ -1,3 +1,7 @@
+/*
+* Code Reviewed By Blair 11/16/2026.
+*/
+
 import { useRef, useState } from 'react';
 import profanity from 'allprofanity';
 import '../css/SuggestionComments.css';
@@ -27,6 +31,7 @@ function SuggestionComments({
     const pendingComment = useRef<{ commentId: string; text: string } | null>(null);
     const key = { userId: suggestionUserId, suggestionId };
 
+    // Loads comments from the database and updates the state
     async function loadComments() {
         if (postingComment.current) {
             return;
@@ -43,18 +48,19 @@ function SuggestionComments({
                 setComments(loadedComments);
                 setCommentCount(loadedComments.length);
             }
-        } catch (error) {
-            console.error('Could not load comments:', error);
+        } catch (error) {  
+            console.error('Could not load comments:', error); 
             if (thisLoad === loadNumber.current) {
                 setError(describeDatabaseError(error, 'Comments'));
             }
-        } finally {
+        } finally { 
             if (thisLoad === loadNumber.current) {
                 setLoading(false);
             }
         }
     }
 
+    // Toggles the expanded state of the comments section
     function toggleComments() {
         setExpanded(!expanded);
         if (!expanded) {
@@ -62,21 +68,22 @@ function SuggestionComments({
         }
     }
 
+    // Handles the submission of a new comment, including validation and saving to the database
     async function postComment() {
         if (postingComment.current || loading) {
             return;
         }
-        const cleanedText = text.trim();
+        const cleanedText = text.trim(); // Trim whitespace from the comment text
         if (!cleanedText || cleanedText.length > 1000) {
             setError('Enter a comment with 1 to 1000 characters.');
             return;
         }
-        if (profanity.check(cleanedText)) {
+        if (profanity.check(cleanedText)) { // Check for profanity in the comment text
             setError('No profanity allowed :)');
             return;
         }
 
-        if (pendingComment.current?.text !== cleanedText) {
+        if (pendingComment.current?.text !== cleanedText) { // If the pending comment is different from the current text, create a new pending comment
             pendingComment.current = {
                 commentId: 'COMMENT_' + new Date().toISOString(),
                 text: cleanedText,
@@ -86,7 +93,7 @@ function SuggestionComments({
         postingComment.current = true;
         setPosting(true);
         setError('');
-        try {
+        try { 
             const { userId, client } = await getSignedInDynamo();
             const store = createSuggestionStore(client);
             const comment = await store.saveComment(
@@ -95,7 +102,7 @@ function SuggestionComments({
                 pendingComment.current.commentId,
                 cleanedText,
             );
-            setComments((current) => {
+            setComments((current) => { // Update the comments state with the new comment, ensuring no duplicates and sorting by commentId
                 const otherComments = current.filter(
                     (item) => item.commentId !== comment.commentId,
                 );
@@ -103,12 +110,12 @@ function SuggestionComments({
                     a.commentId.localeCompare(b.commentId),
                 );
             });
-            setCommentCount((count) =>
+            setCommentCount((count) => // Increment the comment count only if the comment is new
                 comments.some((item) => item.commentId === comment.commentId) ? count : count + 1,
             );
             setText('');
             pendingComment.current = null;
-        } catch (error) {
+        } catch (error) { // Handle errors during comment posting, including specific handling for comment ID conflicts
             console.error('Could not save comment:', error);
             if ((error as Error).name === 'CommentIdConflict') {
                 pendingComment.current = null;
@@ -116,7 +123,7 @@ function SuggestionComments({
             } else {
                 setError(describeDatabaseError(error, 'Comments'));
             }
-        } finally {
+        } finally { // Reset the posting state and allow new comments to be posted
             postingComment.current = false;
             setPosting(false);
         }

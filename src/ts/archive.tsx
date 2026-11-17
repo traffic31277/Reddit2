@@ -1,3 +1,8 @@
+/*
+* Code Reviewed By Blair 11/16/2026.
+*/
+
+
 import { useEffect, useState } from 'react';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, ExecuteStatementCommand } from '@aws-sdk/lib-dynamodb';
@@ -47,6 +52,7 @@ function Post({ suggestion, onCountsChange }: PostProps) {
     );
 }
 
+
 export default function Archive() {
     const [posts, setPosts] = useState<Suggestion[]>([]);
     const [sortBy, setSortBy] = useState<'none' | 'likes' | 'newest'>('none');
@@ -55,7 +61,7 @@ export default function Archive() {
     useEffect(() => {
         let active = true;
 
-        async function getPosts() {
+        async function getPosts() { 
             const client = new DynamoDBClient({
                 region: 'us-east-2',
                 credentials: fromCognitoIdentityPool({
