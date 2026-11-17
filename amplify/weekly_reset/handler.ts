@@ -1,5 +1,6 @@
 /*
-Code reviewed by lily 11/2/26
+Code reviewed by lily 11/16/26
+Added handling for more than one suggestion having the most number of likes during a week
 */
 
 import { type Schema } from '../data/resource';
@@ -125,7 +126,15 @@ export const handler: EventBridgeHandler<"Scheduled Event", null, void> = async 
   for (const item of suggestions) {
     if (topLikesCount < item.likes) {
       topLikesCount = item.likes;
-      topSuggestion = item;
+    }
+  }
+
+  for (const item of suggestions) {
+    if (topLikesCount == item.likes) {
+      if (topSuggestion == null) {
+        topSuggestion = []
+      }
+      topSuggestion.push(item);
     }
   }
 
@@ -134,18 +143,20 @@ export const handler: EventBridgeHandler<"Scheduled Event", null, void> = async 
 
   // Add the top suggestion from this week to the TopSuggestion table
   if (topSuggestion != null) {
-    await externalClient.send(
-      new PutCommand({
-        TableName: TOP_SUGGESTIONS_TABLE_NAME,
-        Item: {
-          suggestionId: topSuggestion.suggestionId,
-          pseudonym: topSuggestion.pseudonym,
-          text: topSuggestion.text,
-          likes: topSuggestion.likes,
-          comments: topSuggestion.comments
-        }
-      })
-    )
+    for (const item in topSuggestion) {
+      await externalClient.send(
+        new PutCommand({
+          TableName: TOP_SUGGESTIONS_TABLE_NAME,
+          Item: {
+            suggestionId: item.suggestionId,
+            pseudonym: item.pseudonym,
+            text: item.text,
+            likes: item.likes,
+            comments: item.comments
+          }
+        })
+      )
+    }
   }
   console.log("Top Suggestion has been added to the archive.");
   
