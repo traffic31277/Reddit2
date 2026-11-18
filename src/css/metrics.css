@@ -1,0 +1,60 @@
+::-webkit-scrollbar {
+    width: 0px;
+    background: transparent; /* make scrollbar transparent */
+}
+
+button {
+    color:black;
+    background-color: beige;
+    border-radius: 15px;
+    font-weight: bold;
+    margin:auto;
+    margin-top: 20px;
+    height: 70px;
+    display: block;
+    width: 200px;
+}
+
+input {
+    margin: auto;
+    width: 50vw;  
+    margin-top: 10px;
+    margin-bottom: 10px;
+
+}
+
+label {
+    display: block;
+    color: white;
+    font-size: large;
+}
+
+span {
+    display: block;
+    width:50vw;
+    margin: auto;
+}
+
+.metrics_table_container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 1.5rem;
+}
+
+.metrics_table {
+    width: 80%;
+    max-width: 800px;
+    border-collapse: collapse;
+    text-align: center;
+}
+
+.metrics_table th {
+    padding: 0.75rem;
+    border-bottom: 2px solid #ccc;
+}
+
+.metrics_table td {
+    padding: 0.5rem;
+    border-bottom: 1px solid #eee;
+}

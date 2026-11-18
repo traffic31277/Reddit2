@@ -9,6 +9,7 @@ import Mailbox from './mailbox.tsx';
 import Leaderboard from './leaderboard.tsx';
 import Reset from './reset.tsx';
 import ResetPassword from './resetPassword.tsx';
+import MetricsDashboard from './metrics.tsx';
 import SuggestionVotes from './SuggestionVotes.tsx';
 import Archive from './archive.tsx'
 import LandingPage from './landingpage.tsx';
@@ -36,6 +37,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route path='/leaderboard' element={<Leaderboard/>}/>
           <Route path='/suggest' element={<MakeSuggestion/>}/>
           <Route path='/archive' element={<Archive/>}/>
+          <Route path='/metrics' element={<MetricsDashboard/>}/>
         </Routes>
       </Router>
   </React.StrictMode>
