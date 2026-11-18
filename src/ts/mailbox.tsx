@@ -53,9 +53,10 @@ function Mailbox() {
 
 	return (
 		<div className="suggestion-container">
+			<NavigationBar />
 			<main className="content-section">
 				<img
-					src="/mailbox.png"
+					src="mailbox_transparent.png"
 					alt="Mailbox with letter"
 					className="mailbox-icon"
 				/>
@@ -65,7 +66,6 @@ function Mailbox() {
 					</button>
 				}
 			</main>
-			<NavigationBar />
 		</div>
 	);
 }

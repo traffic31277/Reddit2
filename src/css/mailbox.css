@@ -19,10 +19,10 @@
 }
 
 .mailbox-icon {
-  width: 220px;
+  width: 40%;
   max-width: 80vw;
   height: auto;
-  margin-bottom: 50px;
+  padding-bottom: 20%;
 }
 
 
@@ -56,8 +56,10 @@ body:has(.suggestion-container) #root {
 }
 
 .suggestion-container {
-    width: 100%;
-    min-height: 100vh;
-    min-height: 100svh;
     box-sizing: border-box;
+    background-image: url('../assets/sky_backdrop.jpg');
+    background-size: 95%;
+    background-repeat: no-repeat;
+    background-position-x: center;
+    
 }
