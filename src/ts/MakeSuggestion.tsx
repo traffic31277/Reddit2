@@ -75,6 +75,7 @@ function MakeSuggestion() {
                         pseudonym: user.Item?.pseudonym,    
                         text: text,
                         likes: 0,
+                        dislikes: 0,
                         comments: 0
                     }
                 })
