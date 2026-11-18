@@ -1,13 +1,20 @@
 .sort_button {
-    width:20%;
-    float: center;
-    margin: auto;
-    margin-left: 5%;
-    border-radius: 20px;
-    background-color: beige;
-    color: black;
-    display: inline;
-    font-weight: bold;
+    display:inline-block;
+    background-color: teal;
+    border-style: solid;
+    border-width: 5px;
+    border-color: beige;
+    border-radius: 30px;
+    list-style-type: none;
+    height: 40px;
+    width: 30%;
+    width: fit-content;
+    text-decoration: none;
+    padding: 20px;
+    margin: 0 0 0 5px;
+    padding-top: 5px;
+    overflow: hidden;
+    color: beige;
   }
 
 .post_background {

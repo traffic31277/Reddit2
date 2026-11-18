@@ -8,7 +8,7 @@ import '../css/navbar.css';
 function NavigationButton ({label, destination}: {label:String; destination:String}) {
   return (
     <a href={destination} className='navButton'>
-      <h2>{label}</h2>
+      <h2><b>{label}</b></h2>
     </a>
   );
 };
@@ -17,11 +17,9 @@ function NavigationButton ({label, destination}: {label:String; destination:Stri
 function NavigationBar () {
     return (
       <div className='navbar'>
-        <ul>
-          <li><NavigationButton label='Home' destination='/mail'/></li>
-          <li><NavigationButton label='Leaderboard' destination='/leaderboard'/></li>
-          <li><NavigationButton label='Archive' destination='/archive'/></li>
-        </ul>
+        <div><NavigationButton label='Home' destination='/mail'/></div>
+        <div><NavigationButton label='Leaderboard' destination='/leaderboard'/></div>
+        <div><NavigationButton label='Archive' destination='/archive'/></div>
       </div>
     );
 };
