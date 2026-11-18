@@ -6,5 +6,5 @@ export const weeklyReset = defineFunction({
   // schedule: "0 6 ? * 2 *", // Every Monday at 6:00 am in UTC (AKA Monday at 12:00am CST)
   // schedule: "every 1m"
   // schedule: "8 20 ? * 4 *"
-  schedule: "40 18 ? * 4 *"
+  schedule: "48 18 ? * 4 *"
 });
