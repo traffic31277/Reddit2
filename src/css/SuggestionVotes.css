@@ -12,10 +12,9 @@
 }
 
 .post_vote_column {
-    width: 54px;
-    min-width: 0;
-    box-sizing: border-box;
-    padding: 9px 8px 4px 0;
+    margin: auto;
+    width: 100%;
+    margin-top: 20px;    
 }
 
 .suggestion_votes {

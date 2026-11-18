@@ -62,6 +62,13 @@
     size: 50px;
 }
 
+.final_likes_count {
+  color:black;
+  vertical-align: auto;
+  font-size: x-large;
+  margin-top: 50%;
+}
+
 ::-webkit-scrollbar {
     width: 0px;
     background: transparent; /* make scrollbar transparent */
