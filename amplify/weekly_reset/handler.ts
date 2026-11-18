@@ -143,16 +143,18 @@ export const handler: EventBridgeHandler<"Scheduled Event", null, void> = async 
 
   // Add the top suggestion from this week to the TopSuggestion table
   if (topSuggestion != null) {
-    for (const item in topSuggestion) {
+    for (let i = 0; i < topSuggestion.length; i++) {
+      console.log("Testing....");
+      console.log(topSuggestion[i]);
       await externalClient.send(
         new PutCommand({
           TableName: TOP_SUGGESTIONS_TABLE_NAME,
           Item: {
-            suggestionId: item.suggestionId,
-            pseudonym: item.pseudonym,
-            text: item.text,
-            likes: item.likes,
-            comments: item.comments
+            suggestionId: topSuggestion[i].suggestionId,
+            pseudonym: topSuggestion[i].pseudonym,
+            text: topSuggestion[i].text,
+            likes: topSuggestion[i].likes,
+            comments: topSuggestion[i].comments
           }
         })
       )
