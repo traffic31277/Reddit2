@@ -150,6 +150,13 @@ export default function Leaderboard() {
         return created >= start && created < end; 
     });
 
+    if (sortBy === 'likes') {
+        visiblePosts.sort((first, second) => second.likes - first.likes);
+    } else if (sortBy === 'newest') {
+        visiblePosts.sort((first, second) => second.suggestionId.localeCompare(first.suggestionId));
+    }
+
+
 return (
     <>
       <div>
@@ -157,7 +164,6 @@ return (
       </div>
       
       <NavigationBar />
-
             <div>
                 <button className='sort_button' onClick={() => setSortBy('likes')}>LIKES</button>
                 <button className='sort_button' onClick={() => setSortBy('newest')}>NEWEST</button>
