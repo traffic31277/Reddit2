@@ -97,7 +97,7 @@ function MakeSuggestion() {
             navigate('/mail');
         }
     }
-
+ 
     return (
         <main>
             <h1>Make Your Suggestion!</h1>
