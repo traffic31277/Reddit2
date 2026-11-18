@@ -1,26 +1,28 @@
 .navbar {
-  margin:auto;
-  width: 90%;
+  min-width: fit-content;
+  width: 100%;
 }
 
 .navbar li{ 
     display:inline-block;
-    border: solid 5px white;
-    background-color: darkcyan;
+    background-color: beige;
+    border-style: solid;
+    border-width: 5px;
+    border-color: teal;
+    border-radius: 30px;
     list-style-type: none;
-    height: 75px;
-    width: 33%;
+    height: 40px;
+    width: fit-content;
     text-decoration: none;
     overflow: auto;
+    padding: 20px;
+    margin: 5px;
+    padding-top: 5px;
 }
 
 .navButton h2 {
   display: inline-block;
-  vertical-align: middle;
-  line-height: normal;
-  padding: 5px;
-  padding-top: 15px;
-  color: white;
+  color: teal;
   font-size:0.8lh;
 }
 
@@ -82,9 +84,7 @@ body {
 }
 
 #root {
-  width: 1126px;
   max-width: 100%;
-  margin: 0 auto;
   text-align: center;
   border-inline: 1px solid var(--border);
   min-height: 100svh;

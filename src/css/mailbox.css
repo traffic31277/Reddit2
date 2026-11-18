@@ -22,12 +22,12 @@
   display: flex;
   box-sizing: border-box;
   background-image: url('../assets/mailbox.png');
-  background-size: 100%;
+  background-size: cover;
   background-repeat: no-repeat;
   background-position-x: center;
   margin: 0;
-  width: 40vw;
-  height: 70vh;
+  width: 300px;
+  height: 100vh;
 }
 
 
@@ -63,7 +63,7 @@ body:has(.suggestion-container) #root {
 .suggestion-container {
     box-sizing: border-box;
     background-image: url('../assets/sky_backdrop.jpg');
-    background-size: 100%;
+    background-size:cover;
     background-repeat: no-repeat;
     background-position-x: center;
     
