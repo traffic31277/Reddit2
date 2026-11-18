@@ -100,6 +100,7 @@ function MakeSuggestion() {
     return (
         <main>
             <h1>Make Your Suggestion!</h1>
+            <NavigationBar />
             <div>
                 <input className='input_box_background'
                     type="text"
@@ -115,7 +116,6 @@ function MakeSuggestion() {
                     Submit Suggestion
                 </button>
             </div>
-            <NavigationBar />
         </main>
     )
 };
