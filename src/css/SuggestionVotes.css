@@ -1,4 +1,3 @@
-/* Compact voting strip on the right of the beige suggestion card. */
 .post_main_row {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 54px;
@@ -13,10 +12,9 @@
 }
 
 .post_vote_column {
-    width: 54px;
-    min-width: 0;
-    box-sizing: border-box;
-    padding: 9px 8px 4px 0;
+    margin: auto;
+    width: 100%;
+    margin-top: 20px;    
 }
 
 .suggestion_votes {
@@ -98,7 +96,6 @@
     visibility: visible;
 }
 
-/* Keep an AWS warning subtle and inside the compact strip. */
 .suggestion_vote_error_marker {
     position: absolute;
     top: 0;

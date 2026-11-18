@@ -3,11 +3,19 @@ import profanity from 'allprofanity';
 import '../css/SuggestionComments.css';
 import { describeDatabaseError, getSignedInDynamo } from './dynamoSession';
 import { createSuggestionStore, type CommentItem } from './suggestionStore';
+import { Pass } from 'aws-cdk-lib/aws-stepfunctions';
 
 interface SuggestionCommentsProps {
     suggestionId: string;
     suggestionUserId: string;
     initialCommentCount: number;
+}
+
+const COMMENT_COOLDOWN = 20_000;
+const COMMENT_PREFIX = 'COMMENT_';
+
+function getCommentTimestamp(commentId: string): number {
+    return Date.parse(commentId.replace(COMMENT_PREFIX, ''))
 }
 
 function SuggestionComments({
@@ -76,18 +84,50 @@ function SuggestionComments({
             return;
         }
 
-        if (pendingComment.current?.text !== cleanedText) {
-            pendingComment.current = {
-                commentId: 'COMMENT_' + new Date().toISOString(),
-                text: cleanedText,
-            };
-        }
-
         postingComment.current = true;
         setPosting(true);
         setError('');
         try {
             const { userId, client } = await getSignedInDynamo();
+
+            // Get the most recent comment to check for cooldown
+            // Filter for any of the user's previous comments
+            const lastOwnerComment = comments
+                .filter((currentComment) => currentComment.userId === userId)
+                
+                // Runs through all the users comments and updates based on which one is the newest, to get the most recent comment
+                .reduce<(typeof comments)[number] | null>(
+                    (lastCreatedComment, currentComment) =>
+                        !lastCreatedComment || currentComment.commentId > lastCreatedComment.commentId ? currentComment : lastCreatedComment,
+                    null,
+                );
+
+            // Determine if the cooldown is needed
+            if (lastOwnerComment) {
+                const lastTime = getCommentTimestamp(lastOwnerComment.commentId);
+                
+                // Checks if the getCommentTimestamp() failed or not, if so it will skip because it will be a NaN
+                if (!Number.isNaN(lastTime)) {
+                    const timeElapsed = Math.max(0, Date.now() - lastTime);
+                    
+                    // Using the difference in time between now and the last comment, check if there should be a timeout
+                    if (timeElapsed < COMMENT_COOLDOWN) {
+                        const secondsLeft = Math.ceil((COMMENT_COOLDOWN - timeElapsed) / 1000);
+                        setError(
+                            `Please wait ${secondsLeft} second${secondsLeft === 1 ? '' : 's'} before commenting again.`,
+                        );
+                        return;
+                    }
+                }
+            }
+
+            if (pendingComment.current?.text !== cleanedText) {
+                pendingComment.current = {
+                    commentId: COMMENT_PREFIX + new Date().toISOString(),
+                    text: cleanedText,
+                };
+            }
+
             const store = createSuggestionStore(client);
             const comment = await store.saveComment(
                 key,

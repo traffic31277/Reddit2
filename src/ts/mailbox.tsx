@@ -53,19 +53,16 @@ function Mailbox() {
 
 	return (
 		<div className="suggestion-container">
+			<NavigationBar />
+			<div className='mailbox-icon'>
+			</div>
 			<main className="content-section">
-				<img
-					src="/mailbox.png"
-					alt="Mailbox with letter"
-					className="mailbox-icon"
-				/>
 				{allowSubmit &&
 					<button className="submit-btn" onClick={handleNavigation}>
 						Submit Suggestion
 					</button>
 				}
 			</main>
-			<NavigationBar />
 		</div>
 	);
 }

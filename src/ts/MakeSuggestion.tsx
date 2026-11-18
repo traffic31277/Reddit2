@@ -25,7 +25,9 @@ function MakeSuggestion() {
             credentials: fromCognitoIdentityPool({
                 identityPoolId: 'us-east-2:12e12612-5d7f-4e29-b566-432accd9bcca',
             }),
-        });
+        }
+    );
+
     const docClient = DynamoDBDocumentClient.from(client);
 
     const [text, setText] = useState("");
@@ -98,6 +100,7 @@ function MakeSuggestion() {
     return (
         <main>
             <h1>Make Your Suggestion!</h1>
+            <NavigationBar />
             <div>
                 <input className='input_box_background'
                     type="text"
@@ -113,7 +116,6 @@ function MakeSuggestion() {
                     Submit Suggestion
                 </button>
             </div>
-            <NavigationBar />
         </main>
     )
 };
